@@ -1,0 +1,97 @@
+const opportunityService = require('../services/opportunityService');
+const Opportunity = require('../models/Opportunity');
+const { success } = require('../utils/apiResponse');
+const { generateOpportunityNumber } = require('../utils/numberGenerator');
+const asyncHandler = require('../middleware/asyncHandler');
+const AppError = require('../utils/AppError');
+const { getReports, hasAccess } = require('../utils/securityUtils');
+const AuditLog = require('../models/AuditLog');
+
+/**
+ * Get all opportunities
+ */
+const getOpportunities = asyncHandler(async (req, res, next) => {
+    // Ownership & Hierarchy Filter
+    const filter = {};
+    if (req.user.role !== 'ADMIN') {
+        const reportIds = await getReports(req.user.id);
+        filter.owner = { $in: [req.user.id, ...reportIds] };
+    }
+
+    const opportunities = await Opportunity.find(filter)
+        .populate('account', 'companyName')
+        .populate('primaryContact', 'firstName lastName');
+    res.status(200).json(success(opportunities));
+});
+
+/**
+ * Create new opportunity
+ */
+const createOpportunity = asyncHandler(async (req, res, next) => {
+    const oppNumber = generateOpportunityNumber();
+    const opportunity = await Opportunity.create({
+        ...req.body,
+        opportunityNumber: oppNumber,
+        owner: req.user.id
+    });
+
+    await AuditLog.create({
+        user: req.user.id,
+        action: 'CREATE',
+        resource: 'Opportunity',
+        resourceId: opportunity._id,
+        ipAddress: req.ip
+    });
+
+    res.status(201).json(success(opportunity, 'Opportunity created successfully'));
+});
+
+/**
+ * Advance opportunity stage
+ */
+const advanceStage = asyncHandler(async (req, res, next) => {
+    const { newStage } = req.body;
+
+    // Check ownership & hierarchy first
+    const opportunity = await Opportunity.findById(req.params.id);
+    if (!opportunity) return next(new AppError('Opportunity not found', 404));
+
+    const authorized = await hasAccess(req.user, opportunity.owner);
+    if (!authorized) {
+        return next(new AppError('Not authorized to access this opportunity', 403));
+    }
+
+    try {
+        const updatedOpp = await opportunityService.advanceStage(req.params.id, newStage, req.user.id);
+
+        await AuditLog.create({
+            user: req.user.id,
+            action: 'UPDATE',
+            resource: 'Opportunity',
+            resourceId: opportunity._id,
+            details: { newStage }
+        });
+
+        res.status(200).json(success(updatedOpp, 'Stage advanced successfully'));
+    } catch (err) {
+        // Service might throw logic error like "Invalid transition"
+        return next(new AppError(err.message, 400));
+    }
+});
+
+/**
+ * Get sales pipeline for user
+ */
+const getPipeline = asyncHandler(async (req, res, next) => {
+    // Pipeline service already handles filtering by user if we pass req.user.id correctly
+    // But let's verify if we should restrict this service call too.
+    const pipeline = await opportunityService.getPipeline(req.user.id);
+    res.status(200).json(success(pipeline));
+});
+
+module.exports = {
+    getOpportunities,
+    createOpportunity,
+    advanceStage,
+    getPipeline
+};

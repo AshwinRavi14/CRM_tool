@@ -1,0 +1,30 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: wersel-crm-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 3000
+      - key: MONGODB_URI
+        sync: false # User must provide in dashboard
+      - key: JWT_SECRET
+        generateValue: true
+      - key: ALLOWED_ORIGINS
+        sync: false # User must provide after frontend is up
+
+  # Frontend Static Site
+  - type: static
+    name: wersel-crm-frontend
+    env: static
+    rootDir: frontend
+    buildCommand: npm install && npm run build
+    publishPath: dist
+    envVars:
+      - key: VITE_API_URL
+        sync: false # User must provide pointing to backend URL

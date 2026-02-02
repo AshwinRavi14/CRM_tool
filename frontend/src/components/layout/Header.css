@@ -1,0 +1,446 @@
+/* Main Header Layout */
+.header {
+    height: 70px;
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 260px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--spacing-xl);
+    z-index: 900;
+    border-bottom: 1px solid var(--border);
+    background: rgba(15, 23, 42, 0.6);
+    backdrop-filter: blur(8px);
+    transition: all var(--transition-normal);
+}
+
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+    flex: 1;
+    /* Allow it to take up space */
+}
+
+.header-left .page-title {
+    display: none;
+    /* Hide title as search bar replaces it essentially in user flow based on image? Or just beside it? */
+    /* User asked to "move it to left corner", image shows ONLY search bar in left corner. */
+    /* User didn't ask to delete title, but image implies search bar IS the main element there. */
+    /* I will hide title for now based on the layout request to resemble the image. */
+}
+
+.header-center {
+    display: none;
+    /* Remove center section */
+}
+
+.search-container {
+    display: flex;
+    align-items: center;
+    padding: var(--spacing-sm) var(--spacing-md);
+    gap: var(--spacing-sm);
+    background: rgba(255, 255, 255, 0.05) !important;
+    border-color: rgba(255, 255, 255, 0.1) !important;
+    width: 320px;
+    /* Fixed width for better look in left header code */
+    height: 40px;
+}
+
+.search-input {
+    background: none;
+    border: none;
+    color: white;
+    width: 100%;
+    font-size: 0.875rem;
+}
+
+.search-input:focus {
+    outline: none;
+}
+
+.search-icon {
+    color: var(--text-secondary);
+}
+
+.header-right {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.create-btn {
+    background: linear-gradient(135deg, var(--primary), var(--accent));
+    color: white;
+    padding: var(--spacing-sm) var(--spacing-md);
+    border-radius: 8px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+    transition: transform var(--transition-fast);
+}
+
+.create-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.1);
+}
+
+.icon-btn {
+    color: var(--text-secondary);
+    padding: var(--spacing-sm);
+    border-radius: 8px;
+    transition: all var(--transition-fast);
+    position: relative;
+}
+
+.icon-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-primary);
+}
+
+.icon-btn .badge {
+    position: absolute;
+    top: 6px;
+    right: 6px;
+    width: 8px;
+    height: 8px;
+    background: var(--error);
+    border-radius: 50%;
+    border: 2px solid var(--bg-dark);
+}
+
+.divider {
+    width: 1px;
+    height: 24px;
+    background: var(--border);
+}
+
+.avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 10px;
+    cursor: pointer;
+    border: 2px solid var(--border);
+    transition: border-color var(--transition-fast);
+}
+
+.avatar:hover {
+    border-color: var(--primary);
+}
+
+.search-mobile {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .header-center {
+        display: none;
+    }
+
+    .search-mobile {
+        display: flex;
+    }
+}
+
+/* Search Results Dropdown */
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    margin-top: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+    z-index: 1000;
+    padding: var(--spacing-md);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+    background: rgba(30, 41, 59, 0.95);
+    backdrop-filter: blur(12px);
+    border: 1px solid var(--glass-border);
+    border-radius: 12px;
+}
+
+.search-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.group-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    color: var(--primary);
+    font-weight: 700;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    padding-left: 8px;
+}
+
+.search-result-item {
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.search-result-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--primary);
+}
+
+.menu-btn {
+    display: none;
+    margin-right: var(--spacing-md);
+    background: none;
+    border: none;
+    padding: 8px;
+    border-radius: 8px;
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+@media (max-width: 1024px) {
+    .header-center {
+        display: none;
+    }
+
+    .search-mobile {
+        display: flex;
+    }
+
+    .menu-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .header {
+        left: 0;
+    }
+}
+
+/* Dropdown Styles */
+.relative-container {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 12px);
+    right: 0;
+    width: 280px;
+    background: rgba(15, 23, 42, 0.85);
+    /* Darker, more premium background */
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    /* Subtle border */
+    border-radius: 16px;
+    box-shadow:
+        0 4px 6px -1px rgba(0, 0, 0, 0.3),
+        0 10px 15px -3px rgba(0, 0, 0, 0.3),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+    /* Inner glow */
+    z-index: 1000;
+    overflow: hidden;
+    animation: menuSlideIn 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    transform-origin: top right;
+}
+
+@keyframes menuSlideIn {
+    from {
+        opacity: 0;
+        transform: scale(0.96) translateY(-8px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.dropdown-header {
+    padding: 14px 16px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 255, 255, 0.02);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.dropdown-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    color: var(--text-primary);
+    transition: all 0.15s ease;
+    display: flex;
+    flex-direction: column;
+    border-left: 2px solid transparent;
+}
+
+.dropdown-item:hover {
+    background: rgba(255, 255, 255, 0.04);
+    border-left-color: var(--primary);
+    padding-left: 20px;
+    /* Slide effect */
+}
+
+/* Specific styling for notification items to look rich */
+.dropdown-item.unread {
+    background: linear-gradient(to right, rgba(56, 189, 248, 0.05), transparent);
+}
+
+.notification-title {
+    font-weight: 500;
+    margin-bottom: 4px;
+    color: var(--text-primary);
+}
+
+.notification-time {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.dropdown-footer {
+    padding: 12px;
+    text-align: center;
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--primary);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    cursor: pointer;
+    background: rgba(255, 255, 255, 0.02);
+    transition: background 0.2s;
+}
+
+.dropdown-footer:hover {
+    background: rgba(56, 189, 248, 0.1);
+}
+
+/* Apps Grid - Premium Look */
+.apps-dropdown {
+    width: 320px;
+}
+
+.apps-grid {
+    padding: 16px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+}
+
+.app-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+    padding: 12px 8px;
+    border-radius: 12px;
+    transition: all 0.2s;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid transparent;
+}
+
+.app-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+.app-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+    color: white;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.2);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Distinct gradients for apps */
+.app-icon.crm {
+    background: linear-gradient(135deg, #0ea5e9, #2563eb);
+}
+
+.app-icon.mail {
+    background: linear-gradient(135deg, #f43f5e, #e11d48);
+}
+
+.app-icon.desk {
+    background: linear-gradient(135deg, #10b981, #059669);
+}
+
+.app-icon.books {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+}
+
+.app-icon.chat {
+    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+}
+
+.app-icon.people {
+    background: linear-gradient(135deg, #ec4899, #db2777);
+}
+
+.app-item span {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+}
+
+.app-item:hover span {
+    color: var(--text-primary);
+}
+
+/* Profile Menu */
+.profile-menu {
+    width: 240px;
+}
+
+.profile-header {
+    padding: 20px;
+    text-align: center;
+    background: radial-gradient(circle at center, rgba(56, 189, 248, 0.1) 0%, transparent 70%);
+}
+
+.profile-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 2px;
+}
+
+.profile-email {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+}
+
+.dropdown-item.dangerous {
+    color: var(--error);
+}
+
+.dropdown-item.dangerous:hover {
+    background: rgba(239, 68, 68, 0.1);
+    border-left-color: var(--error);
+}
+
+.icon-btn.active {
+    background: rgba(56, 189, 248, 0.15);
+    /* Primary color glow */
+    color: var(--primary);
+    transform: scale(1.05);
+}
