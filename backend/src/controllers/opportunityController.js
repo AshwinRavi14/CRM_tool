@@ -83,15 +83,96 @@ const advanceStage = asyncHandler(async (req, res, next) => {
  * Get sales pipeline for user
  */
 const getPipeline = asyncHandler(async (req, res, next) => {
-    // Pipeline service already handles filtering by user if we pass req.user.id correctly
-    // But let's verify if we should restrict this service call too.
-    const pipeline = await opportunityService.getPipeline(req.user.id);
+    // If ADMIN, they can see everything. Otherwise just their own + reports.
+    let ownerId = req.user.id;
+    if (req.user.role === 'ADMIN') {
+        // We might want a different service method or pass null to service to signify 'all'
+        const pipeline = await opportunityService.getPipeline(null); // Passing null for all
+        return res.status(200).json(success(pipeline));
+    }
+
+    const pipeline = await opportunityService.getPipeline(ownerId);
     res.status(200).json(success(pipeline));
+});
+
+/**
+ * Get single opportunity
+ */
+const getOpportunity = asyncHandler(async (req, res, next) => {
+    const opportunity = await Opportunity.findById(req.params.id)
+        .populate('account')
+        .populate('primaryContact')
+        .populate('owner', 'firstName lastName email');
+
+    if (!opportunity) return next(new AppError('Opportunity not found', 404));
+
+    const authorized = await hasAccess(req.user, opportunity.owner._id);
+    if (!authorized) {
+        return next(new AppError('Not authorized to access this opportunity', 403));
+    }
+
+    res.status(200).json(success(opportunity));
+});
+
+/**
+ * Update opportunity
+ */
+const updateOpportunity = asyncHandler(async (req, res, next) => {
+    let opportunity = await Opportunity.findById(req.params.id);
+    if (!opportunity) return next(new AppError('Opportunity not found', 404));
+
+    const authorized = await hasAccess(req.user, opportunity.owner);
+    if (!authorized) {
+        return next(new AppError('Not authorized to access this opportunity', 403));
+    }
+
+    opportunity = await Opportunity.findByIdAndUpdate(req.params.id, req.body, {
+        new: true,
+        runValidators: true
+    });
+
+    await AuditLog.create({
+        user: req.user.id,
+        action: 'UPDATE',
+        resource: 'Opportunity',
+        resourceId: opportunity._id,
+        ipAddress: req.ip
+    });
+
+    res.status(200).json(success(opportunity, 'Opportunity updated successfully'));
+});
+
+/**
+ * Delete opportunity
+ */
+const deleteOpportunity = asyncHandler(async (req, res, next) => {
+    const opportunity = await Opportunity.findById(req.params.id);
+    if (!opportunity) return next(new AppError('Opportunity not found', 404));
+
+    const authorized = await hasAccess(req.user, opportunity.owner);
+    if (!authorized) {
+        return next(new AppError('Not authorized to access this opportunity', 403));
+    }
+
+    await opportunity.deleteOne();
+
+    await AuditLog.create({
+        user: req.user.id,
+        action: 'DELETE',
+        resource: 'Opportunity',
+        resourceId: req.params.id,
+        ipAddress: req.ip
+    });
+
+    res.status(200).json(success(null, 'Opportunity deleted successfully'));
 });
 
 module.exports = {
     getOpportunities,
+    getOpportunity,
     createOpportunity,
+    updateOpportunity,
+    deleteOpportunity,
     advanceStage,
     getPipeline
 };

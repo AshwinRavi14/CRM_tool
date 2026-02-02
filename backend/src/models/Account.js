@@ -59,7 +59,8 @@ const accountSchema = new mongoose.Schema({
     },
     salesStage: {
         type: String,
-        enum: ['AWARENESS', 'CONSIDERATION', 'DECISION']
+        enum: ['Qualifying', 'Nurturing', 'Proposal', 'Negotiation', 'Closed Won'],
+        default: 'Qualifying'
     },
     nextFollowUp: Date,
     createdBy: {

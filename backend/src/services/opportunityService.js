@@ -48,7 +48,10 @@ const advanceStage = async (opportunityId, newStage, userId) => {
 };
 
 const getPipeline = async (ownerId) => {
-    const opportunities = await Opportunity.find({ owner: ownerId });
+    const filter = ownerId ? { owner: ownerId } : {};
+    const opportunities = await Opportunity.find(filter)
+        .populate('account', 'companyName')
+        .populate('owner', 'firstName lastName');
 
     const pipeline = {
         prospecting: [],

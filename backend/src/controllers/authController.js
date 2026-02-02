@@ -73,31 +73,10 @@ const register = asyncHandler(async (req, res, next) => {
         email,
         password,
         role,
-        manager
+        isVerified: true // Auto-verify for easy initial setup/demo
     });
 
-    // Generate verification token
-    const verificationToken = user.getVerificationToken();
-    await user.save({ validateBeforeSave: false });
-
-    // Create verification URL
-    const verifyUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/verify-email/${verificationToken}`;
-
-    const message = `Please verify your email via this link:\n\n${verifyUrl}`;
-
-    try {
-        await sendEmail({
-            email: user.email,
-            subject: 'Wersel CRM - Verify your email',
-            message
-        });
-
-        res.status(201).json(success(null, 'User registered. Please check email to verify account.'));
-    } catch (err) {
-        user.verificationToken = undefined;
-        await user.save({ validateBeforeSave: false });
-        return next(new AppError('Email could not be sent', 500));
-    }
+    res.status(201).json(success(null, 'User registered successfully. You can now log in.'));
 });
 
 /**
