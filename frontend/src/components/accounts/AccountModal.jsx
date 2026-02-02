@@ -1,166 +1,184 @@
-import React, { useState } from 'react';
-import { X, Building2, Globe, Phone, Mail, MapPin, Tag, Briefcase } from 'lucide-react';
-import '../projects/CreateProjectModal.css'; // Reusing modal styles
+import React, { useState, useEffect } from 'react';
+import { X, Building2, Globe, Phone, Mail, MapPin, Tag, Briefcase, User, Info, DollarSign, Users } from 'lucide-react';
+import './AccountModal.css';
 
-const AccountModal = ({ onClose, onSave, initialData, title = "Add New Account" }) => {
+const AccountModal = ({ onClose, onSave, initialData, title = "New Account" }) => {
     const [formData, setFormData] = useState({
-        companyName: initialData?.companyName || '',
-        accountType: initialData?.accountType || 'PROSPECT',
-        industry: initialData?.industry || 'OTHER',
-        website: initialData?.website || '',
-        phone: initialData?.phone || '',
-        email: initialData?.email || '',
+        name: '',
+        parentAccount: '',
+        accountNumber: '',
+        tickerSymbol: '',
+        type: 'Prospect',
+        ownership: '--None--',
+        industry: 'Technology',
+        employees: '',
+        annualRevenue: '',
+        rating: '--None--',
+        phone: '',
+        website: '',
+        email: '',
+        owner: 'Anthony Davis',
         billingAddress: {
-            city: initialData?.billingAddress?.city || '',
+            street: '',
+            city: '',
+            state: '',
+            zip: '',
+            country: ''
+        },
+        shippingAddress: {
+            street: '',
+            city: '',
+            state: '',
+            zip: '',
+            country: ''
         }
     });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        if (name === 'city') {
+    useEffect(() => {
+        if (initialData) {
             setFormData({
                 ...formData,
-                billingAddress: { ...formData.billingAddress, city: value }
+                name: initialData.name || initialData.companyName || '',
+                type: initialData.type || initialData.accountType || 'Prospect',
+                industry: initialData.industry || 'Technology',
+                website: initialData.website || '',
+                phone: initialData.phone || '',
+                email: initialData.email || '',
+                billingAddress: {
+                    ...formData.billingAddress,
+                    city: initialData.city || (initialData.billingAddress && initialData.billingAddress.city) || ''
+                }
             });
+        }
+    }, [initialData]);
+
+    const handleInteract = (e) => {
+        const { name, value } = e.target;
+        if (name.includes('.')) {
+            const [section, field] = name.split('.');
+            setFormData(prev => ({
+                ...prev,
+                [section]: { ...prev[section], [field]: value }
+            }));
         } else {
-            setFormData({ ...formData, [name]: value });
+            setFormData(prev => ({ ...prev, [name]: value }));
         }
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        onSave(formData);
+        setIsSubmitting(true);
+        try {
+            // Adjusting field name for backend compatibility
+            const payload = { ...formData, companyName: formData.name };
+            await onSave(payload);
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
-        <div className="modal-overlay" onClick={(e) => {
-            if (e.target === e.currentTarget) onClose();
-        }}>
-            <div className="modal-content glass-card slide-up">
-                <div className="modal-header">
-                    <h3>{title}</h3>
-                    <button className="icon-btn-sm" onClick={onClose}>
-                        <X size={20} />
-                    </button>
+        <div className="modal-overlay-sf">
+            <div className="modal-content-sf fade-in">
+                <div className="modal-header-sf">
+                    <h3>{initialData ? 'Edit Account' : 'New Account'}</h3>
+                    <button className="close-btn-sf" onClick={onClose}><X size={20} /></button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="modal-body">
-                    <div className="form-group">
-                        <label>Company Name</label>
-                        <div className="input-with-icon glass">
-                            <Building2 size={16} />
-                            <input
-                                type="text"
-                                name="companyName"
-                                placeholder="Quantum Systems"
-                                value={formData.companyName}
-                                onChange={handleChange}
-                                required
-                            />
-                        </div>
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label>Account Type</label>
-                            <div className="input-with-icon glass">
-                                <Tag size={16} />
-                                <select
-                                    name="accountType"
-                                    className="glass-select"
-                                    value={formData.accountType}
-                                    onChange={handleChange}
-                                >
-                                    <option value="PROSPECT">Prospect</option>
-                                    <option value="CUSTOMER">Customer</option>
-                                    <option value="PARTNER">Partner</option>
+                <form onSubmit={handleSubmit} className="modal-body-sf">
+                    {/* Section 1: Account Information */}
+                    <div className="form-section-sf">
+                        <div className="section-title-sf">Account Information</div>
+                        <div className="form-grid-sf">
+                            <div className="form-group-sf">
+                                <label className="required-sf">Account Name</label>
+                                <input type="text" name="name" value={formData.name} onChange={handleInteract} required />
+                            </div>
+                            <div className="form-group-sf">
+                                <label>Account Owner</label>
+                                <div className="readonly-box-sf"><User size={14} /> {formData.owner}</div>
+                            </div>
+                            <div className="form-group-sf">
+                                <label>Type</label>
+                                <select name="type" value={formData.type} onChange={handleInteract}>
+                                    <option>Prospect</option>
+                                    <option>Customer - Direct</option>
+                                    <option>Customer - Channel</option>
+                                    <option>Channel Partner</option>
                                 </select>
                             </div>
-                        </div>
-                        <div className="form-group">
-                            <label>Industry</label>
-                            <div className="input-with-icon glass">
-                                <Briefcase size={16} />
-                                <select
-                                    name="industry"
-                                    className="glass-select"
-                                    value={formData.industry}
-                                    onChange={handleChange}
-                                >
-                                    <option value="AI_DEVELOPMENT">AI Development</option>
-                                    <option value="HEALTHCARE">Healthcare</option>
-                                    <option value="RETAIL">Retail</option>
-                                    <option value="FINANCE">Finance</option>
-                                    <option value="LOGISTICS">Logistics</option>
-                                    <option value="ENERGY">Energy</option>
-                                    <option value="MANUFACTURING">Manufacturing</option>
-                                    <option value="OTHER">Other</option>
+                            <div className="form-group-sf">
+                                <label>Parent Account</label>
+                                <input type="text" name="parentAccount" value={formData.parentAccount} onChange={handleInteract} />
+                            </div>
+                            <div className="form-group-sf">
+                                <label>Website</label>
+                                <input type="text" name="website" value={formData.website} onChange={handleInteract} />
+                            </div>
+                            <div className="form-group-sf">
+                                <label>Account Number</label>
+                                <input type="text" name="accountNumber" value={formData.accountNumber} onChange={handleInteract} />
+                            </div>
+                            <div className="form-group-sf">
+                                <label>Ticker Symbol</label>
+                                <input type="text" name="tickerSymbol" value={formData.tickerSymbol} onChange={handleInteract} />
+                            </div>
+                            <div className="form-group-sf">
+                                <label>Industry</label>
+                                <select name="industry" value={formData.industry} onChange={handleInteract}>
+                                    <option>Technology</option>
+                                    <option>Finance</option>
+                                    <option>Healthcare</option>
+                                    <option>Manufacturing</option>
                                 </select>
                             </div>
-                        </div>
-                    </div>
-
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label>Website</label>
-                            <div className="input-with-icon glass">
-                                <Globe size={16} />
-                                <input
-                                    type="text"
-                                    name="website"
-                                    placeholder="example.com"
-                                    value={formData.website}
-                                    onChange={handleChange}
-                                />
+                            <div className="form-group-sf">
+                                <label>Employees</label>
+                                <input type="number" name="employees" value={formData.employees} onChange={handleInteract} />
                             </div>
-                        </div>
-                        <div className="form-group">
-                            <label>City</label>
-                            <div className="input-with-icon glass">
-                                <MapPin size={16} />
-                                <input
-                                    type="text"
-                                    name="city"
-                                    placeholder="New York"
-                                    value={formData.billingAddress.city}
-                                    onChange={handleChange}
-                                />
+                            <div className="form-group-sf">
+                                <label>Annual Revenue</label>
+                                <div className="input-with-symbol-sf">
+                                    <span>$</span>
+                                    <input type="text" name="annualRevenue" value={formData.annualRevenue} onChange={handleInteract} />
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <div className="form-row">
-                        <div className="form-group">
-                            <label>Email</label>
-                            <div className="input-with-icon glass">
-                                <Mail size={16} />
-                                <input
-                                    type="email"
-                                    name="email"
-                                    placeholder="contact@company.com"
-                                    value={formData.email}
-                                    onChange={handleChange}
-                                />
+                    {/* Section 2: Address Information */}
+                    <div className="form-section-sf mt-sm">
+                        <div className="section-title-sf">Address Information</div>
+                        <div className="form-grid-sf">
+                            <div className="form-group-sf full-width-sf">
+                                <label>Billing Street</label>
+                                <textarea name="billingAddress.street" value={formData.billingAddress.street} onChange={handleInteract} style={{ height: '60px' }}></textarea>
                             </div>
-                        </div>
-                        <div className="form-group">
-                            <label>Phone</label>
-                            <div className="input-with-icon glass">
-                                <Phone size={16} />
-                                <input
-                                    type="tel"
-                                    name="phone"
-                                    placeholder="+1 234 567 890"
-                                    value={formData.phone}
-                                    onChange={handleChange}
-                                />
+                            <div className="form-group-sf">
+                                <label>Billing City</label>
+                                <input type="text" name="billingAddress.city" value={formData.billingAddress.city} onChange={handleInteract} />
+                            </div>
+                            <div className="form-group-sf">
+                                <label>Billing State/Province</label>
+                                <input type="text" name="billingAddress.state" value={formData.billingAddress.state} onChange={handleInteract} />
+                            </div>
+                            <div className="form-group-sf">
+                                <label>Billing Zip/Postal Code</label>
+                                <input type="text" name="billingAddress.zip" value={formData.billingAddress.zip} onChange={handleInteract} />
+                            </div>
+                            <div className="form-group-sf">
+                                <label>Billing Country</label>
+                                <input type="text" name="billingAddress.country" value={formData.billingAddress.country} onChange={handleInteract} />
                             </div>
                         </div>
                     </div>
 
-                    <div className="modal-footer">
-                        <button type="button" className="cancel-btn" onClick={onClose}>Cancel</button>
-                        <button type="submit" className="save-btn">{initialData ? 'Update Account' : 'Create Account'}</button>
+                    <div className="modal-footer-sf">
+                        <button type="button" className="btn-sf secondary" onClick={onClose}>Cancel</button>
+                        <button type="submit" className="btn-sf primary" disabled={isSubmitting}>
+                            {isSubmitting ? 'Saving...' : 'Save'}
+                        </button>
                     </div>
                 </form>
             </div>
