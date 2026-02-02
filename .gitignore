@@ -22,5 +22,7 @@ yarn-error.log*
 *.swp
 *.swo
 
-# Credentials
+# Secrets
+credentials
 credentials/
+Then verify:
