@@ -1,23 +1,32 @@
 :root {
-  /* Colors */
-  --bg-dark: #0f172a;
-  --bg-surface: rgba(30, 41, 59, 0.7);
-  --bg-sidebar: #1e293b;
-  --primary: #38bdf8;
-  --primary-hover: #0ea5e9;
-  --accent: #818cf8;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --border: rgba(255, 255, 255, 0.1);
-  --glass-bg: rgba(255, 255, 255, 0.05);
-  --glass-border: rgba(255, 255, 255, 0.1);
-  --glass-blur: blur(12px);
-  
-  /* Status Colors */
-  --success: #10b981;
-  --warning: #f59e0b;
-  --error: #ef4444;
-  --info: #3b82f6;
+  /* Salesforce Light Theme Colors */
+  --bg-dark: #f3f4f7;
+  /* Main background */
+  --bg-surface: #ffffff;
+  /* Card & Surface background */
+  --bg-sidebar: #0176d3;
+  /* Salesforce Blue Sidebar */
+  --primary: #0176d3;
+  /* Primary Salesforce Blue */
+  --primary-hover: #015ba1;
+  --accent: #1589ee;
+  --text-primary: #181818;
+  /* Deep gray for readability */
+  --text-secondary: #444444;
+  /* Medium gray for labels */
+  --text-muted: #706e6b;
+  /* Muted icons/text */
+  --text-on-primary: #ffffff;
+
+  --border: #dddbda;
+  /* Standard Salesforce border color */
+  --border-light: #f3f2f1;
+
+  /* Status Colors (Salesforce Palette) */
+  --success: #2e844a;
+  --warning: #fe9339;
+  --error: #ea001e;
+  --info: #0176d3;
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -27,13 +36,18 @@
   --spacing-xl: 32px;
 
   /* Transitions */
-  --transition-fast: 0.2s ease;
-  --transition-normal: 0.3s ease;
-  
-  /* Shadows */
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --transition-fast: 0.1s ease;
+  --transition-normal: 0.2s ease;
+
+  /* Shadows (Salesforce Soft Shadows) */
+  --shadow-sm: 0 2px 2px 0 rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 4px 4px 0 rgba(0, 0, 0, 0.16);
+  --shadow-lg: 0 8px 16px 0 rgba(0, 0, 0, 0.1);
+
+  /* Glassmorphism Legacy support (converted to opaque for Salesforce look) */
+  --glass-bg: #ffffff;
+  --glass-border: #dddbda;
+  --glass-blur: blur(0px);
 }
 
 * {
@@ -43,7 +57,7 @@
 }
 
 body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   background-color: var(--bg-dark);
   color: var(--text-primary);
   line-height: 1.5;
@@ -57,6 +71,8 @@ button {
   border: none;
   background: none;
   font-family: inherit;
+  border-radius: 4px;
+  /* Flatter buttons for Salesforce */
 }
 
 ul {
@@ -68,53 +84,42 @@ a {
   color: inherit;
 }
 
-/* Glassmorphism Classes */
+/* Redefining Glass classes to Salesforce Cards */
 .glass {
-  background: var(--glass-bg);
-  backdrop-filter: var(--glass-blur);
-  -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: 12px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  /* Less rounded for Salesforce */
+  box-shadow: var(--shadow-sm);
 }
 
 .glass-card {
-  background: rgba(30, 41, 59, 0.4);
-  backdrop-filter: var(--glass-blur);
-  border: 1px solid var(--glass-border);
-  border-radius: 16px;
+  background: var(--bg-surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
   padding: var(--spacing-lg);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-md);
 }
 
-/* Light Theme */
-[data-theme='light'] {
-    --bg-dark: #f8fafc;
-    --bg-surface: rgba(255, 255, 255, 0.8);
-    --bg-sidebar: #ffffff;
-    --primary: #0ea5e9;
-    --primary-hover: #0284c7;
-    --accent: #6366f1;
-    --text-primary: #0f172a;
-    --text-secondary: #64748b;
-    --border: rgba(0, 0, 0, 0.1);
-    --glass-bg: rgba(0, 0, 0, 0.03);
-    --glass-border: rgba(0, 0, 0, 0.05);
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+.divider-h {
+  height: 1px;
+  background-color: var(--border);
+  margin: 1rem 0;
 }
 
-/* Ocean Theme */
-[data-theme='ocean'] {
-    --bg-dark: #0c4a6e;
-    --bg-surface: rgba(12, 74, 110, 0.7);
-    --bg-sidebar: #075985;
-    --primary: #22d3ee;
-    --primary-hover: #06b6d4;
-    --accent: #2dd4bf;
-    --text-primary: #f0f9ff;
-    --text-secondary: #bae6fd;
-    --border: rgba(255, 255, 255, 0.15);
-    --glass-bg: rgba(255, 255, 255, 0.08);
-    --glass-border: rgba(255, 255, 255, 0.15);
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
+.fade-in {
+  animation: fadeIn 0.3s ease forwards;
+}

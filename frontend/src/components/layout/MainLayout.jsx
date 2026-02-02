@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, Outlet } from 'react-router-dom';
+import { ChevronUp, CheckSquare } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
-import Sidebar from './Sidebar';
 import Header from './Header';
 import './MainLayout.css';
 
 const MainLayout = () => {
     const { user, loading } = useAuth();
     const navigate = useNavigate();
-    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     useEffect(() => {
         if (!loading && !user) {
@@ -30,13 +29,23 @@ const MainLayout = () => {
     if (!user) return null;
 
     return (
-        <div className="layout-container">
-            <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
-            <div className="main-content">
-                <Header onMenuClick={() => setIsSidebarOpen(true)} />
-                <main className="page-content">
+        <div className="layout-horizontal">
+            <Header />
+            <main className="main-content-sf">
+                <div className="page-content-sf">
                     <Outlet />
-                </main>
+                </div>
+            </main>
+
+            {/* Global Salesforce To-Do List Footer */}
+            <div className="global-footer-todo-sf">
+                <div className="todo-trigger-sf">
+                    <div className="todo-label-sf">
+                        <CheckSquare size={14} className="todo-icon-sf" />
+                        <span>To Do List</span>
+                    </div>
+                    <ChevronUp size={14} className="todo-arrow-sf" />
+                </div>
             </div>
         </div>
     );

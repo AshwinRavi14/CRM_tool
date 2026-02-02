@@ -26,11 +26,18 @@ export const AuthProvider = ({ children }) => {
     };
 
     const checkAuthStatus = async () => {
+        const token = sessionStorage.getItem('crm_access_token');
+        if (!token) {
+            setUser(null);
+            setLoading(false);
+            return;
+        }
+
         try {
-            // Attempt to get user info - this will trigger refresh interceptor if accessToken is missing or expired
             const response = await apiClient.get('/auth/me');
             setUser(response.data);
         } catch (error) {
+            // Silently handle 401 for initial auth check
             setUser(null);
         } finally {
             setLoading(false);

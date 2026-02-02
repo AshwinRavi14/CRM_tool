@@ -9,9 +9,11 @@ import {
     Mail,
     Smartphone
 } from 'lucide-react';
+import { useAuth } from '../context/AuthContext';
 import './Settings.css';
 
 const Settings = () => {
+    const { user: authUser } = useAuth();
     const [activeTab, setActiveTab] = React.useState('profile');
     const [theme, setTheme] = React.useState(localStorage.getItem('theme') || 'dark');
     const [reducedMotion, setReducedMotion] = React.useState(localStorage.getItem('reducedMotion') === 'true');
@@ -47,11 +49,11 @@ const Settings = () => {
                             <div className="form-row">
                                 <div className="form-group">
                                     <label>First Name</label>
-                                    <input type="text" className="glass" defaultValue="Cleona" />
+                                    <input type="text" className="glass" defaultValue={authUser?.firstName || ''} />
                                 </div>
                                 <div className="form-group">
                                     <label>Last Name</label>
-                                    <input type="text" className="glass" defaultValue="Davis" />
+                                    <input type="text" className="glass" defaultValue={authUser?.lastName || ''} />
                                 </div>
                             </div>
 
@@ -59,13 +61,13 @@ const Settings = () => {
                                 <label>Email Address</label>
                                 <div className="input-with-icon glass">
                                     <Mail size={16} />
-                                    <input type="email" defaultValue="cleona.davis@wersel.ai" />
+                                    <input type="email" defaultValue={authUser?.email || ''} readOnly />
                                 </div>
                             </div>
 
                             <div className="form-group">
-                                <label>Job Title</label>
-                                <input type="text" className="glass" defaultValue="Senior Account Manager" />
+                                <label>Role</label>
+                                <input type="text" className="glass" defaultValue={authUser?.role?.replace('_', ' ') || ''} readOnly />
                             </div>
 
                             <div className="form-actions">

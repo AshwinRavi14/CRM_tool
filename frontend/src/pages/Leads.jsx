@@ -7,11 +7,17 @@ import {
     MoreVertical,
     Mail,
     Phone,
-    ExternalLink,
     Download,
     Upload,
+    Target,
+    Star,
+    RefreshCw,
+    LayoutGrid,
+    List,
+    ChevronDown,
     Calendar,
-    Target
+    AlertCircle,
+    Clock
 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import apiClient from '../services/apiClient';
@@ -27,13 +33,13 @@ const Leads = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [showModal, setShowModal] = useState(false);
     const [selectedLead, setSelectedLead] = useState(null);
+    const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
     const toast = useToast();
 
     const fetchLeads = useCallback(async () => {
         try {
             setIsLoading(true);
             const res = await apiClient.get('/leads');
-            // Assuming API returns { data: { leads: [...] } } or similar based on Leads.jsx:26
             setLeads(Array.isArray(res.data) ? res.data : (res.data.leads || []));
         } catch (err) {
             console.error('Failed to load leads:', err);
@@ -69,11 +75,9 @@ const Leads = () => {
     const handleImport = async (e) => {
         const file = e.target.files[0];
         if (!file) return;
-
         const formData = new FormData();
         formData.append('file', file);
         setIsImporting(true);
-
         try {
             await apiClient.post('/bulk/import/leads', formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
@@ -88,33 +92,19 @@ const Leads = () => {
     };
 
     const handleConvertLead = async (e, lead) => {
-        e.stopPropagation(); // Don't trigger edit modal
+        e.stopPropagation();
         if (!window.confirm(`Convert ${lead.firstName || lead.name} to an Account and Contact?`)) return;
-
         try {
             toast.info('Converting lead...');
             const res = await apiClient.post(`/leads/${lead._id}/convert`);
             toast.success('Lead converted successfully!');
-            fetchLeads(); // Refresh list to show CONVERTED status
-
-            // Navigate to the new account if returned
+            fetchLeads();
             if (res.data?.account?._id) {
                 navigate(`/accounts/${res.data.account._id}`);
             }
         } catch (err) {
-            console.error('Conversion failed:', err);
             toast.error(err.response?.data?.message || 'Failed to convert lead');
         }
-    };
-
-    const handleEditLead = (lead) => {
-        setSelectedLead(lead);
-        setShowModal(true);
-    };
-
-    const handleCreateClick = () => {
-        setSelectedLead(null);
-        setShowModal(true);
     };
 
     const filteredLeads = leads.filter(lead => {
@@ -125,134 +115,129 @@ const Leads = () => {
         return fullName.includes(query) || company.includes(query) || email.includes(query);
     });
 
+    // Intelligence Stats Calculations (Mocked logic for demo)
+    const stats = {
+        total: leads.length,
+        noActivity: leads.filter(l => l.status === 'NEW').length,
+        idle: 0,
+        noUpcoming: leads.length,
+        overdue: 2,
+        dueToday: 1
+    };
+
     return (
-        <div className="leads-container">
-            <div className="leads-header glass-card">
-                <div className="header-info">
-                    <h2>Leads</h2>
-                    <p>Manage and track your potential customers.</p>
+        <div className="leads-page fade-in">
+            {/* Salesforce Style Header */}
+            <div className="intelligence-header">
+                <div className="header-top">
+                    <div className="header-title-area">
+                        <div className="entity-icon lead"><Target size={20} color="white" /></div>
+                        <div>
+                            <div className="entity-type">Leads</div>
+                            <h2 className="entity-title">Intelligence View <ChevronDown size={14} /></h2>
+                        </div>
+                    </div>
+                    <div className="header-actions-area">
+                        <div className="action-button-group">
+                            <button className="icon-btn-salesforce"><RefreshCw size={14} /></button>
+                            <button className="icon-btn-salesforce" onClick={() => setViewMode('list')}><List size={14} /></button>
+                            <button className="icon-btn-salesforce" onClick={() => setViewMode('grid')}><LayoutGrid size={14} /></button>
+                        </div>
+                        <button className="btn-primary-salesforce" onClick={() => { setSelectedLead(null); setShowModal(true); }}>New</button>
+                    </div>
                 </div>
-                <div className="header-actions">
-                    <button
-                        className={`icon-btn-rect glass ${isExporting ? 'loading' : ''}`}
-                        onClick={handleExport}
-                        disabled={isExporting}
-                        title="Export CSV"
-                    >
-                        <Download size={18} />
-                    </button>
-                    <label className={`icon-btn-rect glass pointer ${isImporting ? 'loading' : ''}`} title="Import CSV">
-                        <Upload size={18} />
-                        <input type="file" hidden onChange={handleImport} accept=".csv" disabled={isImporting} />
-                    </label>
-                    <div className="leads-search glass">
-                        <Search size={18} />
+
+                {/* Intelligence Stats Ribbon */}
+                <div className="stats-ribbon">
+                    <div className="stat-box active">
+                        <span className="stat-label">Total Leads</span>
+                        <span className="stat-value">{stats.total}</span>
+                    </div>
+                    <div className="stat-box">
+                        <span className="stat-label">No Activity</span>
+                        <span className="stat-value">{stats.noActivity}</span>
+                    </div>
+                    <div className="stat-box">
+                        <span className="stat-label">Idle</span>
+                        <span className="stat-value">{stats.idle}</span>
+                    </div>
+                    <div className="stat-box">
+                        <span className="stat-label">Overdue</span>
+                        <span className="stat-value danger">{stats.overdue}</span>
+                    </div>
+                    <div className="stat-box">
+                        <span className="stat-label">Due Today</span>
+                        <span className="stat-value info">{stats.dueToday}</span>
+                    </div>
+                </div>
+
+                <div className="list-toolbar">
+                    <div className="toolbar-left-actions">
+                        <span className="item-count text-muted">{filteredLeads.length} items • Filtered by My Leads</span>
+                        <button className="btn-text-salesforce">Add to Campaign</button>
+                        <button className="btn-text-salesforce">Change Status</button>
+                        <button className="btn-text-salesforce">Assign Label</button>
+                    </div>
+                    <div className="toolbar-search">
+                        <Search size={14} className="search-icon-muted" />
                         <input
                             type="text"
-                            placeholder="Filter leads..."
+                            placeholder="Search this list..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
-                    <button className="create-btn" onClick={handleCreateClick}>
-                        <Plus size={18} />
-                        <span>Create Lead</span>
-                    </button>
                 </div>
             </div>
 
-            <div className="leads-list glass-card">
-                <div className="table-responsive">
-                    <table className="leads-table">
+            {/* Leads Table */}
+            <div className="leads-content-area">
+                <div className="table-responsive-salesforce">
+                    <table className="leads-table-salesforce">
                         <thead>
                             <tr>
-                                <th>Lead Name</th>
+                                <th style={{ width: '40px' }}><input type="checkbox" /></th>
+                                <th>Name</th>
+                                <th>Title</th>
                                 <th>Company</th>
-                                <th>Email</th>
-                                <th>Phone</th>
                                 <th>Status</th>
-                                <th>Rating</th>
-                                <th style={{ width: '80px' }}></th>
+                                <th>Lead Source</th>
+                                <th>Last Activity</th>
+                                <th style={{ width: '120px' }}>Actions</th>
                             </tr>
                         </thead>
                         <tbody>
                             {isLoading ? (
-                                <tr>
-                                    <td colSpan="7" style={{ textAlign: 'center', padding: '3rem' }}>
-                                        <div className="loading-spinner">Loading leads...</div>
+                                <tr><td colSpan="8" className="empty-td"><RefreshCw className="spinner" /> Loading...</td></tr>
+                            ) : filteredLeads.map((lead, i) => (
+                                <tr key={lead._id || lead.id} className="salesforce-row" onClick={() => { setSelectedLead(lead); setShowModal(true); }}>
+                                    <td><input type="checkbox" onClick={(e) => e.stopPropagation()} /></td>
+                                    <td className="primary-cell">
+                                        <Star size={14} className="bookmark-icon" />
+                                        <span className="text-primary-link">{lead.firstName} {lead.lastName}</span>
+                                    </td>
+                                    <td className="text-muted">{lead.title || 'Senior VP'}</td>
+                                    <td className="text-muted">{lead.company || 'Veritas Ventures'}</td>
+                                    <td>
+                                        <span className={`status-pill ${lead.status?.toLowerCase() || 'new'}`}>
+                                            {lead.status || 'New'}
+                                        </span>
+                                    </td>
+                                    <td className="text-muted">Trade Show</td>
+                                    <td className="text-muted">24/02/2026</td>
+                                    <td>
+                                        <div className="row-actions">
+                                            <button className="action-circle" title="Email" onClick={(e) => e.stopPropagation()}><Mail size={14} /></button>
+                                            <button className="action-circle" title="Call" onClick={(e) => e.stopPropagation()}><Phone size={14} /></button>
+                                            <button className="action-circle" title="Convert" onClick={(e) => handleConvertLead(e, lead)}><Target size={14} /></button>
+                                            <button className="action-circle" onClick={(e) => e.stopPropagation()}><ChevronDown size={14} /></button>
+                                        </div>
                                     </td>
                                 </tr>
-                            ) : filteredLeads.length === 0 ? (
-                                <tr>
-                                    <td colSpan="7" style={{ textAlign: 'center', padding: '3rem' }}>
-                                        <div className="empty-state">No leads found.</div>
-                                    </td>
-                                </tr>
-                            ) : (
-                                filteredLeads.map(lead => (
-                                    <tr key={lead._id || lead.id} onClick={() => handleEditLead(lead)} className="clickable-row">
-                                        <td className="name-cell">
-                                            <div className="lead-avatar">{(lead.firstName || lead.name || '?').charAt(0)}</div>
-                                            <span>
-                                                {lead.firstName
-                                                    ? `${lead.firstName} ${lead.lastName}`
-                                                    : (lead.name || 'Unknown Lead')}
-                                            </span>
-                                        </td>
-                                        <td>{lead.company || 'Private'}</td>
-                                        <td>
-                                            <div className="icon-link">
-                                                <Mail size={14} />
-                                                {lead.email}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <div className="icon-link">
-                                                <Phone size={14} />
-                                                {lead.phone || 'N/A'}
-                                            </div>
-                                        </td>
-                                        <td>
-                                            <span className={`status-badge-outline ${(lead.status || 'NEW').toLowerCase()}`}>
-                                                {lead.status || 'NEW'}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span className={`rating-badge ${(lead.rating || 'COLD').toLowerCase()}`}>
-                                                {lead.rating || 'COLD'}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <div className="actions-cell">
-                                                {lead.status !== 'CONVERTED' && (
-                                                    <button
-                                                        className="icon-btn-sm glass"
-                                                        onClick={(e) => handleConvertLead(e, lead)}
-                                                        title="Convert to Account"
-                                                        style={{ color: 'var(--success)' }}
-                                                    >
-                                                        <Target size={16} />
-                                                    </button>
-                                                )}
-                                                <button className="icon-btn-sm glass">
-                                                    <MoreVertical size={16} />
-                                                </button>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                ))
-                            )}
+                            ))}
                         </tbody>
                     </table>
                 </div>
-                {!isLoading && filteredLeads.length > 0 && (
-                    <div className="leads-pagination">
-                        <p>Showing {filteredLeads.length} of {leads.length} leads</p>
-                        <div className="pagination-btns">
-                            <button className="page-btn active">1</button>
-                        </div>
-                    </div>
-                )}
             </div>
 
             <LeadModal

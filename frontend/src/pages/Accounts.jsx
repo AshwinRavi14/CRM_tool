@@ -1,16 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Building2,
     Search,
-    ExternalLink,
     MoreVertical,
     Plus,
-    Globe,
-    MapPin,
-    Users,
     Download,
-    Activity
+    Pin,
+    Star,
+    RefreshCw,
+    LayoutGrid,
+    List,
+    LayoutList,
+    ChevronDown,
+    Mail,
+    Phone,
+    Building,
+    Settings,
+    Pencil,
+    BarChart2,
+    Filter
 } from 'lucide-react';
 import { useToast } from '../context/ToastContext';
 import apiClient from '../services/apiClient';
@@ -20,32 +29,30 @@ import './Accounts.css';
 const Accounts = () => {
     const navigate = useNavigate();
     const [accounts, setAccounts] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
     const [isExporting, setIsExporting] = useState(false);
     const [showModal, setShowModal] = useState(false);
     const [selectedAccount, setSelectedAccount] = useState(null);
+    const [viewMode, setViewMode] = useState('list');
     const toast = useToast();
 
-    const fetchAccounts = async () => {
+    const fetchAccounts = useCallback(async () => {
         try {
+            setIsLoading(true);
             const res = await apiClient.get('/accounts');
-            // apiClient interceptor returns response.data
-            // Backend returns { success: true, data: [ARRAY], ... }
-            // So res is { success, data, ... } and res.data is the array
             setAccounts(res.data || []);
         } catch (err) {
             console.error('Failed to load accounts:', err);
-            toast.error('Failed to load accounts. Displaying demo data.');
-            setAccounts([
-                { id: 'demo1', companyName: 'Quantum Systems', industry: 'AI_DEVELOPMENT', accountType: 'CUSTOMER', billingAddress: { city: 'San Francisco' }, owner: 'Cleona Davis', website: 'quantum.ai' },
-                { id: 'demo2', companyName: 'Global Retail Corp', industry: 'RETAIL', accountType: 'PROSPECT', billingAddress: { city: 'London' }, owner: 'John Smith', website: 'globalretail.com' },
-            ]);
+            toast.error('Failed to load accounts.');
+        } finally {
+            setIsLoading(false);
         }
-    };
+    }, [toast]);
 
     useEffect(() => {
         fetchAccounts();
-    }, []);
+    }, [fetchAccounts]);
 
     const handleSaveAccount = async (accountData) => {
         try {
@@ -64,16 +71,6 @@ const Accounts = () => {
         }
     };
 
-    const handleEdit = (account) => {
-        setSelectedAccount(account);
-        setShowModal(true);
-    };
-
-    const handleCloseModal = () => {
-        setShowModal(false);
-        setSelectedAccount(null);
-    };
-
     const handleExport = async () => {
         if (isExporting) return;
         setIsExporting(true);
@@ -87,7 +84,7 @@ const Accounts = () => {
             link.click();
             toast.success('Accounts exported successfully');
         } catch (err) {
-            toast.error('Export failed. Please try again.');
+            toast.error('Export failed.');
         } finally {
             setIsExporting(false);
         }
@@ -101,108 +98,117 @@ const Accounts = () => {
         return name.includes(query) || industry.includes(query) || city.includes(query);
     });
 
+    // Account Stats
+    const stats = {
+        total: accounts.length,
+        customers: accounts.filter(a => a.accountType === 'CUSTOMER').length,
+        prospects: accounts.filter(a => a.accountType === 'PROSPECT').length,
+        noActivity: accounts.length > 0 ? 1 : 0
+    };
+
     return (
-        <div className="accounts-container">
-            <div className="accounts-header glass-card">
-                <div className="header-info">
-                    <h2>Accounts</h2>
-                    <p>Organize and manage your client organizations.</p>
+        <div className="accounts-page-sf fade-in">
+            {/* High-Fidelity Salesforce Header */}
+            <div className="accounts-header-sf">
+                {/* Row 1: Entity & Actions */}
+                <div className="header-row-top-sf">
+                    <div className="entity-block-sf">
+                        <div className="entity-icon-sf account"><Building2 size={22} color="white" /></div>
+                        <div className="entity-text-sf">
+                            <span className="entity-label-sf">Accounts</span>
+                            <h2 className="entity-title-sf">
+                                All Accounts <ChevronDown size={14} className="caret-sf" />
+                                <button className="pin-btn-sf"><Pin size={14} fill="#0176d3" color="#0176d3" /></button>
+                            </h2>
+                        </div>
+                    </div>
+                    <div className="header-actions-sf">
+                        <div className="btn-group-sf">
+                            <button className="btn-sf" onClick={() => { setSelectedAccount(null); setShowModal(true); }}>New</button>
+                            <button className="btn-sf">Import</button>
+                            <button className="btn-sf">Assign</button>
+                        </div>
+                    </div>
                 </div>
-                <div className="header-actions">
-                    <button
-                        className={`icon-btn-rect glass ${isExporting ? 'loading' : ''}`}
-                        onClick={handleExport}
-                        disabled={isExporting}
-                        title="Export CSV"
-                    >
-                        <Download size={18} />
-                    </button>
-                    <div className="accounts-search glass">
-                        <Search size={18} />
+
+                {/* Row 2: Metadata Summary */}
+                <div className="header-row-meta-sf">
+                    <span>{filteredAccounts.length} items • Sorted by Account Name • Filtered by All Accounts • Updated a few seconds ago</span>
+                </div>
+
+                {/* Row 3: Toolbar */}
+                <div className="header-row-toolbar-sf">
+                    <div className="toolbar-search-sf">
+                        <Search size={14} className="search-icon-sf" />
                         <input
                             type="text"
-                            placeholder="Search accounts..."
+                            placeholder="Search this list..."
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                     </div>
-                    <button className="create-btn" onClick={() => setShowModal(true)}>
-                        <Plus size={18} />
-                        <span>Add Account</span>
-                    </button>
+                    <div className="toolbar-controls-sf">
+                        <button className="icon-ctrl-sf careted"><Settings size={16} /><ChevronDown size={10} /></button>
+                        <button className="icon-ctrl-sf careted"><LayoutList size={16} /><ChevronDown size={10} /></button>
+                        <button className="icon-ctrl-sf"><Pencil size={16} /></button>
+                        <button className="icon-ctrl-sf" onClick={fetchAccounts}><RefreshCw size={16} /></button>
+                        <button className="icon-ctrl-sf"><BarChart2 size={16} /></button>
+                        <button className="icon-ctrl-sf"><Filter size={16} /></button>
+                        <button className="icon-ctrl-sf"><ChevronDown size={16} /></button>
+                    </div>
                 </div>
             </div>
 
-            <div className="accounts-grid">
-                {filteredAccounts.map(account => (
-                    <div key={account.id || account._id} className="account-card glass-card">
-                        <div
-                            className="card-top"
-                            onClick={() => navigate(`/accounts/${account._id || account.id}`)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <div className="account-icon glass">
-                                <Building2 size={24} color="#38bdf8" />
-                            </div>
-                            <span className={`account-type-badge ${(account.type || account.accountType || '').toLowerCase()}`}>
-                                {account.type || account.accountType}
-                            </span>
-                        </div>
-
-                        <div
-                            className="card-middle"
-                            onClick={() => navigate(`/accounts/${account._id || account.id}`)}
-                            style={{ cursor: 'pointer' }}
-                        >
-                            <h3 className="account-name">{account.name || account.companyName}</h3>
-                            <p className="account-industry">{(account.industry || '').replace('_', ' ')}</p>
-                        </div>
-
-                        <div className="card-details">
-                            <div className="detail-item">
-                                <MapPin size={14} />
-                                <span>{account.city || (account.billingAddress && account.billingAddress.city) || 'No city'}</span>
-                            </div>
-                            <div className="detail-item">
-                                <Globe size={14} />
-                                <span>{account.website || 'No website'}</span>
-                            </div>
-                            <div className="detail-item">
-                                <Users size={14} />
-                                <span>Owned by {
-                                    account.owner?.firstName
-                                        ? `${account.owner.firstName} ${account.owner.lastName}`
-                                        : (account.owner?.name || (typeof account.owner === 'string' ? account.owner : 'System'))
-                                }</span>
-                            </div>
-                        </div>
-
-                        <div className="card-actions">
-                            <button
-                                className="view-details-btn"
-                                onClick={() => navigate(`/accounts/${account._id || account.id}`)}
-                            >
-                                <Activity size={14} />
-                                <span>Intelligence Report</span>
-                            </button>
-                            <button className="icon-btn-rect glass" onClick={() => handleEdit(account)}>
-                                <MoreVertical size={18} />
-                            </button>
-                        </div>
-                    </div>
-                ))}
-                {filteredAccounts.length === 0 && (
-                    <div className="empty-state-card glass-card">
-                        <Search size={48} />
-                        <p>No accounts found matching your search.</p>
-                        {searchQuery && <button className="text-btn" onClick={() => setSearchQuery('')}>Clear search</button>}
-                    </div>
-                )}
+            {/* Accounts Table */}
+            <div className="accounts-content-area">
+                <div className="table-responsive-salesforce">
+                    <table className="accounts-table-sf">
+                        <thead>
+                            <tr>
+                                <th style={{ width: '40px' }}><div className="sf-checkbox-header"><ChevronDown size={14} /></div></th>
+                                <th style={{ width: '40px' }}></th>
+                                <th>Account Name <ChevronDown size={10} /></th>
+                                <th>Type <ChevronDown size={10} /></th>
+                                <th>Last Activity <ChevronDown size={10} /></th>
+                                <th>Next Activity <ChevronDown size={10} /></th>
+                                <th>Open Opportunities <ChevronDown size={10} /></th>
+                                <th>Next Opportunities <ChevronDown size={10} /></th>
+                                <th>Open Cases <ChevronDown size={10} /></th>
+                                <th>YTD Spending <ChevronDown size={10} /></th>
+                                <th>Owner <ChevronDown size={10} /></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {isLoading ? (
+                                <tr><td colSpan="11" className="empty-td"><RefreshCw className="spinner" /> Loading...</td></tr>
+                            ) : filteredAccounts.map((account, i) => (
+                                <tr key={account._id || account.id} className="salesforce-row" onClick={() => navigate(`/accounts/${account._id || account.id}`)}>
+                                    <td><input type="checkbox" onClick={(e) => e.stopPropagation()} /></td>
+                                    <td></td>
+                                    <td className="primary-cell">
+                                        <Star size={14} className="bookmark-icon" />
+                                        <span className="text-primary-link">{account.name || account.companyName}</span>
+                                    </td>
+                                    <td>
+                                        <span className="text-muted">{account.type || account.accountType || 'Prospect'}</span>
+                                    </td>
+                                    <td className="text-muted">--</td>
+                                    <td className="text-muted">--</td>
+                                    <td className="text-muted">0</td>
+                                    <td className="text-muted">--</td>
+                                    <td className="text-muted">0</td>
+                                    <td className="text-muted">$0.00</td>
+                                    <td className="text-muted">Anthony Davis</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {showModal && (
                 <AccountModal
-                    onClose={handleCloseModal}
+                    onClose={() => { setShowModal(false); setSelectedAccount(null); }}
                     onSave={handleSaveAccount}
                     initialData={selectedAccount}
                     title={selectedAccount ? "Edit Account" : "Add New Account"}

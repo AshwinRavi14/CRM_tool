@@ -10,18 +10,28 @@ import {
     Users,
     Activity,
     Briefcase,
-    Calendar,
-    Clock,
     Plus,
-    ExternalLink,
+    CheckCircle2,
+    ChevronDown,
+    ChevronUp,
+    ChevronRight,
+    Star,
+    Pencil,
+    Trash2,
+    Copy,
+    MessageSquare,
+    Calendar,
+    FileText,
     History,
-    Target,
-    Edit // Added Edit icon just in case, though might use Plus
+    MoreHorizontal,
+    Info,
+    UploadCloud,
+    Package,
+    LayoutGrid
 } from 'lucide-react';
 import apiClient from '../services/apiClient';
 import { useToast } from '../context/ToastContext';
 import AccountModal from '../components/accounts/AccountModal';
-import ProjectModal from '../components/projects/ProjectModal';
 import ContactModal from '../components/contacts/ContactModal';
 import './AccountDetails.css';
 
@@ -32,13 +42,23 @@ const AccountDetails = () => {
     const [account, setAccount] = useState(null);
     const [loading, setLoading] = useState(true);
     const [showAccountModal, setShowAccountModal] = useState(false);
-    const [showProjectModal, setShowProjectModal] = useState(false);
     const [showContactModal, setShowContactModal] = useState(false);
+    const [activeStage, setActiveStage] = useState(1);
+    const [activeActivityTab, setActiveActivityTab] = useState('logCall');
+    const [collapsedSections, setCollapsedSections] = useState({ about: false, touch: false });
+    const [activities, setActivities] = useState([]);
+    const [activityLoading, setActivityLoading] = useState(false);
+    const [activityInput, setActivityInput] = useState({ type: 'logCall', comment: '', date: new Date().toISOString().split('T')[0] });
+
+    const stages = ['Qualifying', 'Nurturing', 'Proposal', 'Negotiation', 'Closed Won'];
 
     const fetchAccountDetails = async () => {
         try {
             const response = await apiClient.get(`/accounts/${id}`);
-            setAccount(response.data.data || response.data);
+            const data = response.data.data || response.data;
+            setAccount(data);
+            const stageIndex = stages.findIndex(s => s.toLowerCase() === (data.salesStage || '').toLowerCase());
+            if (stageIndex !== -1) setActiveStage(stageIndex);
             setLoading(false);
         } catch (error) {
             console.error('Error fetching account details:', error);
@@ -47,275 +67,477 @@ const AccountDetails = () => {
         }
     };
 
-    useEffect(() => {
-        fetchAccountDetails();
-    }, [id]);
-
-    const handleUpdateAccount = async (formData) => {
+    const fetchActivities = async () => {
         try {
-            await apiClient.put(`/accounts/${id}`, formData);
-            toast.success('Account information updated');
-            setShowAccountModal(false);
-            fetchAccountDetails();
+            const response = await apiClient.get(`/activities?account=${id}`);
+            setActivities(response.data.data || []);
         } catch (error) {
-            toast.error('Failed to update account information');
+            console.error('Error fetching activities:', error);
         }
     };
 
-    const handleSaveProject = async (projectData) => {
+    const handleActivitySubmit = async (e) => {
+        e.preventDefault();
+        if (!activityInput.comment.trim()) return;
+
         try {
-            // Ensure project is linked to this account ID if the backend expects it
-            // or use account name as requested by the schema currently
-            await apiClient.post('/projects', {
-                ...projectData,
-                account: account.companyName // Link by name for consistency with existing projects
+            setActivityLoading(true);
+            await apiClient.post('/activities', {
+                account: id,
+                type: activityInput.type,
+                description: activityInput.comment,
+                dueDate: activityInput.date
             });
-            toast.success('Project created successfully');
-            setShowProjectModal(false);
+            toast.success('Activity logged');
+            setActivityInput({ ...activityInput, comment: '' });
+            fetchActivities();
+        } catch (error) {
+            console.error('Error logging activity:', error);
+            toast.error('Failed to log activity');
+        } finally {
+            setActivityLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAccountDetails();
+        fetchActivities();
+    }, [id]);
+
+    const markStageComplete = async () => {
+        try {
+            const nextIndex = activeStage + 1;
+            if (nextIndex >= stages.length) return;
+
+            const nextStage = stages[nextIndex];
+            await apiClient.put(`/accounts/${id}`, { salesStage: nextStage });
+            toast.success(`Moved to ${nextStage}`);
             fetchAccountDetails();
         } catch (error) {
-            toast.error('Failed to create project');
+            console.error('Error updating stage:', error);
+            toast.error('Failed to update stage');
         }
+    };
+
+    const handleHeaderDelete = async () => {
+        if (window.confirm('Are you sure you want to delete this account?')) {
+            try {
+                await apiClient.delete(`/accounts/${id}`);
+                toast.success('Account deleted');
+                navigate('/accounts');
+            } catch (error) {
+                console.error('Error deleting account:', error);
+                toast.error('Failed to delete account');
+            }
+        }
+    };
+
+    const toggleSection = (section) => {
+        setCollapsedSections(prev => ({ ...prev, [section]: !prev[section] }));
     };
 
     if (loading) return (
         <div className="loading-container">
-            <div className="spinner"></div>
-            <p>Loading account intelligence...</p>
+            <div className="spinner-salesforce"></div>
+            <p>Loading Intelligence...</p>
         </div>
     );
 
     if (!account) return (
-        <div className="error-container glass-card">
+        <div className="error-container">
             <p>Account not found.</p>
-            <button className="primary-btn" onClick={() => navigate('/accounts')}>Back to Registry</button>
+            <button className="btn-primary-salesforce" onClick={() => navigate('/accounts')}>Back to Registry</button>
         </div>
     );
 
-    // Mock history and future plans if not in schema
-    const history = [
-        { date: 'Oct 12, 2025', action: 'Lead converted to Account', user: 'System' },
-        { date: 'Oct 15, 2025', action: 'Initial strategy meeting scheduled', user: 'Cleona Davis' },
-        { date: 'Oct 20, 2025', action: 'Project "Lung Cancer Detection FNN" initiated', user: 'John Smith' }
-    ];
-
-    const futurePlans = [
-        { date: 'Nov 2025', goal: 'Phase 2 expansion for predictive maintenance' },
-        { date: 'Jan 2026', goal: 'Integration with cloud-based inference engine' }
-    ];
-
-    const ongoingProjects = account.projects?.filter(p => p.status !== 'COMPLETED') || [];
-    const completedProjects = account.projects?.filter(p => p.status === 'COMPLETED') || [];
-
     return (
-        <div className="account-details-container">
-            <div className="details-header">
-                <div className="header-left">
-                    <button className="back-btn glass" onClick={() => navigate('/accounts')}>
-                        <ChevronLeft size={20} />
-                    </button>
-                    <div className="account-title-group">
-                        <div className="account-avatar glass">
-                            <Building2 size={32} color="var(--primary)" />
-                        </div>
-                        <div>
-                            <h2>{account.companyName}</h2>
-                            <p className="industry-tag">{account.industry?.replace('_', ' ')}</p>
-                        </div>
-                    </div>
+        <div className="account-details-page-sf fade-in">
+            {/* Blue Top Tab Indicator */}
+            <div className="top-tab-indicator-sf"></div>
+
+            {/* Header Section */}
+            <div className="details-header-sf-top">
+                <div className="header-breadcrumbs-sf">
+                    <span onClick={() => navigate('/accounts')}>Accounts</span>
+                    <ChevronLeft size={12} className="rotate-180" />
+                    <span className="current-id">{account.companyName}</span>
                 </div>
-                <div className="header-actions">
-                    <button className="action-btn glass" onClick={() => setShowProjectModal(true)}>
-                        <Plus size={18} /> <span>New Project</span>
-                    </button>
-                </div>
-            </div>
-
-            <div className="details-grid">
-                {/* Left Column - Core Info */}
-                <div className="details-sidebar">
-                    <div className="info-card glass-card">
-                        <h3>Contact Information</h3>
-                        <div className="info-list">
-                            <div className="info-item">
-                                <Globe size={16} />
-                                {account.website ? (
-                                    <a href={`https://${account.website}`} target="_blank" rel="noreferrer">{account.website}</a>
-                                ) : (
-                                    <span className="add-link" onClick={() => setShowAccountModal(true)}>Add website</span>
-                                )}
-                            </div>
-                            <div className="info-item">
-                                <Mail size={16} />
-                                <span>{account.email || <span className="add-link" onClick={() => setShowAccountModal(true)}>Add email</span>}</span>
-                            </div>
-                            <div className="info-item">
-                                <Phone size={16} />
-                                <span>{account.phone || <span className="add-link" onClick={() => setShowAccountModal(true)}>Add phone</span>}</span>
-                            </div>
-                            <div className="info-item">
-                                <MapPin size={16} />
-                                <span>{(account.billingAddress && account.billingAddress.city) || <span className="add-link" onClick={() => setShowAccountModal(true)}>Add location</span>}</span>
-                            </div>
-                        </div>
-                        <button className="edit-info-btn" onClick={() => setShowAccountModal(true)}>Edit All</button>
-                    </div>
-
-                    <div className="stats-card glass-card">
-                        <div className="card-header-row" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
-                            <h3 style={{ margin: 0 }}>Key Contacts</h3>
-                            <button
-                                className="icon-btn-sm glass"
-                                onClick={() => setShowContactModal(true)}
-                                title="Add Contact"
-                            >
-                                <Plus size={16} />
-                            </button>
-                        </div>
-                        <div className="mini-contact-list">
-                            {account.contacts?.length > 0 ? account.contacts.map(c => (
-                                <div key={c._id} className="mini-contact-item glass">
-                                    <div className="c-avatar">{c.firstName[0]}</div>
-                                    <div className="c-info">
-                                        <span>{c.firstName} {c.lastName}</span>
-                                        <small>{c.title || 'Decision Maker'}</small>
-                                    </div>
-                                </div>
-                            )) : <p className="empty-msg">No contacts linked yet</p>}
+                <div className="header-main-row-sf">
+                    <div className="header-title-block-sf">
+                        <div className="grid-drag-handle-sf"><LayoutGrid size={14} /></div>
+                        <div className="entity-icon-big account-sf"><Building2 size={24} color="white" /></div>
+                        <div className="entity-text-sf">
+                            <div className="entity-label-sf">Account</div>
+                            <h1 className="entity-name-sf">
+                                {account.companyName}
+                                <ChevronDown size={18} className="caret-sf" />
+                            </h1>
                         </div>
                     </div>
-
-                    <div className="stats-card glass-card">
-                        <div className="stat-item">
-                            <label>Account Type</label>
-                            <span className={`type-badge ${account.accountType?.toLowerCase()}`}>{account.accountType}</span>
+                    <div className="header-actions-sf">
+                        <button className="btn-sf-light"><Plus size={14} /> Follow</button>
+                        <div className="btn-group-sf">
+                            <button className="btn-sf-light" onClick={() => setShowAccountModal(true)}>New</button>
+                            <button className="btn-sf-icon-only"><ChevronDown size={14} /></button>
                         </div>
-                        <div className="stat-item">
-                            <label>Lifecycle Stage</label>
-                            <span>{account.salesStage || 'Discovery'}</span>
-                        </div>
-                        <div className="stat-item">
-                            <label>Account Owner</label>
-                            <div className="owner-info">
-                                <Users size={14} />
-                                <span>{account.owner?.firstName} {account.owner?.lastName}</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                {/* Right Column - Activity & Projects */}
-                <div className="details-main">
-                    <div className="tabs-container">
-                        <div className="main-sections">
-                            {/* Projects Section */}
-                            <div className="content-section glass-card">
-                                <div className="section-header">
-                                    <div className="title-with-icon">
-                                        <Briefcase size={20} color="var(--primary)" />
-                                        <h3>Projects Portfolio</h3>
-                                    </div>
-                                </div>
-
-                                <div className="projects-segments">
-                                    <div className="project-group">
-                                        <h4>Ongoing ({ongoingProjects.length})</h4>
-                                        <div className="mini-project-list">
-                                            {ongoingProjects.length > 0 ? ongoingProjects.map(p => (
-                                                <div key={p._id} className="mini-project-card glass" onClick={() => navigate(`/projects/${p._id}`)}>
-                                                    <div className="p-info">
-                                                        <h5>{p.name}</h5>
-                                                        <div className="p-progress">
-                                                            <div className="progress-bar-bg"><div className="progress-bar-fill" style={{ width: `${p.progress}%` }}></div></div>
-                                                            <span>{p.progress}%</span>
-                                                        </div>
-                                                    </div>
-                                                    <ExternalLink size={14} />
-                                                </div>
-                                            )) : <p className="empty-msg">No active projects</p>}
-                                        </div>
-                                    </div>
-
-                                    <div className="project-group">
-                                        <h4>Completed ({completedProjects.length})</h4>
-                                        <div className="mini-project-list">
-                                            {completedProjects.length > 0 ? completedProjects.map(p => (
-                                                <div key={p._id} className="mini-project-card glass completed" onClick={() => navigate(`/projects/${p._id}`)}>
-                                                    <div className="p-info">
-                                                        <h5>{p.name}</h5>
-                                                        <span className="date">Done on {new Date(p.updatedAt).toLocaleDateString()}</span>
-                                                    </div>
-                                                    <Activity size={14} color="var(--success)" />
-                                                </div>
-                                            )) : <p className="empty-msg">No completed projects yet</p>}
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Intelligence Section (History & Plans) */}
-                            <div className="intel-grid">
-                                <div className="glass-card intel-card">
-                                    <div className="section-header">
-                                        <div className="title-with-icon">
-                                            <History size={20} color="var(--accent)" />
-                                            <h3>Relationship History</h3>
-                                        </div>
-                                    </div>
-                                    <div className="timeline">
-                                        {history.map((h, i) => (
-                                            <div key={i} className="timeline-item">
-                                                <span className="dot"></span>
-                                                <div className="t-content">
-                                                    <span className="date">{h.date}</span>
-                                                    <p>{h.action}</p>
-                                                    <small>by {h.user}</small>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="glass-card intel-card">
-                                    <div className="section-header">
-                                        <div className="title-with-icon">
-                                            <Target size={20} color="#f472b6" />
-                                            <h3>Future Roadmap</h3>
-                                        </div>
-                                    </div>
-                                    <div className="plans-list">
-                                        {futurePlans.map((p, i) => (
-                                            <div key={i} className="plan-item glass">
-                                                <Calendar size={16} />
-                                                <div className="p-details">
-                                                    <span className="date">{p.date}</span>
-                                                    <p>{p.goal}</p>
-                                                </div>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
+                        <button className="btn-sf-light" onClick={() => setShowAccountModal(true)}>Edit</button>
+                        <button className="btn-sf-light" onClick={handleHeaderDelete}>Delete</button>
+                        <div className="btn-group-sf">
+                            <button className="btn-sf-light">Clone</button>
+                            <button className="btn-sf-icon-only"><ChevronDown size={14} /></button>
                         </div>
                     </div>
                 </div>
             </div>
 
+            {/* Content Body */}
+            <div className="details-body-sf">
+                <div className="details-grid-3col-sf">
+
+                    {/* Left Column: Information */}
+                    <div className="col-left-sf">
+                        <div className="collapsible-widget-sf">
+                            <div className="widget-header-sf-collapsible" onClick={() => toggleSection('about')}>
+                                {collapsedSections.about ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                                <span>About</span>
+                            </div>
+                            {!collapsedSections.about && (
+                                <div className="widget-content-sf">
+                                    <div className="detail-field-sf">
+                                        <div className="field-label-sf">Name <Info size={12} className="info-icon-sf" /></div>
+                                        <div className="field-value-sf">
+                                            <span>{account.companyName}</span>
+                                            <Pencil size={12} className="edit-pencil-sf" onClick={() => setShowAccountModal(true)} />
+                                        </div>
+                                    </div>
+                                    <div className="detail-field-sf">
+                                        <div className="field-label-sf">Website</div>
+                                        <div className="field-value-sf">
+                                            <span className="link-sf">{account.website || 'Add Website'}</span>
+                                            <Pencil size={12} className="edit-pencil-sf" onClick={() => setShowAccountModal(true)} />
+                                        </div>
+                                    </div>
+                                    <div className="detail-field-sf">
+                                        <div className="field-label-sf">Type</div>
+                                        <div className="field-value-sf">
+                                            <span>{account.accountType || 'Prospect'}</span>
+                                            <Pencil size={12} className="edit-pencil-sf" />
+                                        </div>
+                                    </div>
+                                    <div className="detail-field-sf">
+                                        <div className="field-label-sf">Description</div>
+                                        <div className="field-value-sf">
+                                            <span className="placeholder-sf">Add Description</span>
+                                            <Pencil size={12} className="edit-pencil-sf" />
+                                        </div>
+                                    </div>
+                                    <div className="detail-field-sf">
+                                        <div className="field-label-sf">Parent Account</div>
+                                        <div className="field-value-sf">
+                                            <span className="placeholder-sf">Add Parent Account</span>
+                                            <Pencil size={12} className="edit-pencil-sf" />
+                                        </div>
+                                    </div>
+                                    <div className="detail-field-sf">
+                                        <div className="field-label-sf">Account Owner</div>
+                                        <div className="field-value-sf">
+                                            <div className="owner-box-sf">
+                                                <div className="owner-avatar-sf">ED</div>
+                                                <span className="link-sf">Elizabeth Watson</span>
+                                            </div>
+                                            <Pencil size={12} className="edit-pencil-sf" />
+                                        </div>
+                                    </div>
+                                    <div className="detail-field-sf">
+                                        <div className="field-label-sf">Account Currency</div>
+                                        <div className="field-value-sf">
+                                            <span>USD - U.S. Dollar</span>
+                                            <Pencil size={12} className="edit-pencil-sf" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
+                        <div className="collapsible-widget-sf mt-md-sf">
+                            <div className="widget-header-sf-collapsible" onClick={() => toggleSection('touch')}>
+                                {collapsedSections.touch ? <ChevronRight size={14} /> : <ChevronDown size={14} />}
+                                <span>Get in Touch</span>
+                            </div>
+                            {!collapsedSections.touch && (
+                                <div className="widget-content-sf">
+                                    <div className="detail-field-sf">
+                                        <div className="field-label-sf">Phone Number</div>
+                                        <div className="field-value-sf">
+                                            <span>{account.phone || 'Add Phone'}</span>
+                                            <Pencil size={12} className="edit-pencil-sf" />
+                                        </div>
+                                    </div>
+                                    <div className="detail-field-sf">
+                                        <div className="field-label-sf">Billing Address</div>
+                                        <div className="field-value-sf">
+                                            <span className="placeholder-sf">Add Billing Address</span>
+                                            <Pencil size={12} className="edit-pencil-sf" />
+                                        </div>
+                                    </div>
+                                    <div className="detail-field-sf">
+                                        <div className="field-label-sf">Shipping Address</div>
+                                        <div className="field-value-sf">
+                                            <span className="placeholder-sf">Add Shipping Address</span>
+                                            <Pencil size={12} className="edit-pencil-sf" />
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Center Column: Workflow & Timeline */}
+                    <div className="col-center-sf">
+                        {/* Stage Ribbon Section */}
+                        <div className="path-container-sf">
+                            <div className="path-ribbon-sf">
+                                {stages.map((stage, index) => {
+                                    const isCompleted = index < activeStage;
+                                    const isCurrent = index === activeStage;
+                                    return (
+                                        <div
+                                            key={stage}
+                                            className={`path-step-sf ${isCompleted ? 'completed' : isCurrent ? 'current' : ''}`}
+                                            onClick={() => setActiveStage(index)}
+                                        >
+                                            <div className="step-arrow-sf">
+                                                {isCompleted && <CheckCircle2 size={12} />}
+                                                <span>{stage}</span>
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                                <div className="path-step-sf incomplete"><span>Incomplete</span></div>
+                                <div className="path-step-sf final"><span>Final Step</span></div>
+                            </div>
+                            <div className="path-status-sf">
+                                <div className="status-text-sf">Status: <strong>{stages[activeStage]}</strong></div>
+                                <button className="btn-sf-primary" onClick={markStageComplete}>Mark Stage as Complete</button>
+                            </div>
+                            <div className="tips-section-sf">
+                                <div className="tips-title-sf">Tips for Success</div>
+                                <ul className="tips-list-sf">
+                                    <li>What issues do they seek to solve and what outcomes are they aiming to achieve?</li>
+                                    <li>Why are they exploring options now and how advanced are they in the buying cycle?</li>
+                                    <li>What's their budget for this?</li>
+                                    <li>What other alternative solutions are they considering?</li>
+                                </ul>
+                            </div>
+                        </div>
+
+                        {/* Activity Tabs Section */}
+                        <div className="activity-tabs-sf mt-lg-sf">
+                            <div className="activity-triggers-sf">
+                                <div className="trigger-group-sf">
+                                    <button
+                                        className={`trigger-btn-sf ${activeActivityTab === 'logCall' ? 'active' : ''}`}
+                                        onClick={() => { setActiveActivityTab('logCall'); setActivityInput(p => ({ ...p, type: 'logCall' })); }}
+                                    >
+                                        <Phone size={14} color="#00a1e0" /> Log a Call <ChevronDown size={14} className="btn-caret-sf" />
+                                    </button>
+                                    <button
+                                        className={`trigger-btn-sf ${activeActivityTab === 'email' ? 'active' : ''}`}
+                                        onClick={() => { setActiveActivityTab('email'); setActivityInput(p => ({ ...p, type: 'email' })); }}
+                                    >
+                                        <Mail size={14} color="#00a1e0" /> Email <ChevronDown size={14} className="btn-caret-sf" />
+                                    </button>
+                                    <button
+                                        className={`trigger-btn-sf ${activeActivityTab === 'event' ? 'active' : ''}`}
+                                        onClick={() => { setActiveActivityTab('event'); setActivityInput(p => ({ ...p, type: 'event' })); }}
+                                    >
+                                        <Calendar size={14} color="#f33" /> New Event <ChevronDown size={14} className="btn-caret-sf" />
+                                    </button>
+                                    <button
+                                        className={`trigger-btn-sf ${activeActivityTab === 'task' ? 'active' : ''}`}
+                                        onClick={() => { setActiveActivityTab('task'); setActivityInput(p => ({ ...p, type: 'task' })); }}
+                                    >
+                                        <CheckCircle2 size={14} color="#3ba755" /> New Task <ChevronDown size={14} className="btn-caret-sf" />
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="activity-composer-sf">
+                                <form onSubmit={handleActivitySubmit}>
+                                    <textarea
+                                        placeholder={`Log your ${activeActivityTab} details here...`}
+                                        value={activityInput.comment}
+                                        onChange={(e) => setActivityInput(p => ({ ...p, comment: e.target.value }))}
+                                    ></textarea>
+                                    <div className="composer-footer-sf">
+                                        <input
+                                            type="date"
+                                            value={activityInput.date}
+                                            onChange={(e) => setActivityInput(p => ({ ...p, date: e.target.value }))}
+                                        />
+                                        <button type="submit" className="btn-sf-primary" disabled={activityLoading}>
+                                            {activityLoading ? 'Logging...' : 'Log Activity'}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <div className="activity-options-sf">
+                                <div className="insight-toggle-sf">
+                                    <div className="toggle-label-sf">Only show activities with insights</div>
+                                    <div className="toggle-switch-sf active"></div>
+                                </div>
+                                <div className="activity-filters-sf">
+                                    Filters: <span>All time</span> | <span>All Activities</span> | <span>Logged calls, email, events, List email, and tasks</span>
+                                    <ChevronDown size={12} className="filter-caret-sf" />
+                                </div>
+                                <div className="activity-controls-sf">
+                                    <span>Refresh</span> • <span>Expand All</span> • <span>View All</span>
+                                </div>
+                            </div>
+
+                            <div className="timeline-sf mt-lg-sf">
+                                <div className="timeline-title-sf">
+                                    <ChevronDown size={14} /> <span>Upcoming and Overdue</span>
+                                    <div className="timeline-help-sf"><ChevronDown size={14} /></div>
+                                </div>
+                                <div className="timeline-items-sf">
+                                    {activities.length === 0 ? (
+                                        <div className="empty-timeline-sf">No activities found for this account.</div>
+                                    ) : activities.map((act, i) => (
+                                        <div key={act._id} className="timeline-item-sf">
+                                            <div className={`tl-icon-circle-sf ${act.type}-sf`}>
+                                                {act.type === 'logCall' && <Phone size={14} />}
+                                                {act.type === 'email' && <Mail size={14} />}
+                                                {act.type === 'event' && <Calendar size={14} />}
+                                                {act.type === 'task' && <CheckCircle2 size={14} />}
+                                            </div>
+                                            {i < activities.length - 1 && <div className="tl-line-sf"></div>}
+                                            <div className="tl-body-sf">
+                                                <div className="tl-header-sf">
+                                                    <span className="tl-title-sf link-sf">{act.description.substring(0, 50)}...</span>
+                                                    <div className="tl-meta-sf">
+                                                        <span>{new Date(act.createdAt).toLocaleString()}</span>
+                                                        <ChevronDown size={12} />
+                                                    </div>
+                                                </div>
+                                                <div className="tl-desc-sf">Activity logged by Anthony Davis</div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Right Column: Related Lists */}
+                    <div className="col-right-sf">
+                        <div className="related-widget-sf">
+                            <div className="related-header-sf">
+                                <div className="related-title-box-sf">
+                                    <div className="widget-icon-box-sf contacts-sf"><Users size={16} /></div>
+                                    <span>Contacts ({account.contacts?.length || 0})</span>
+                                </div>
+                                <ChevronDown size={14} className="related-arrow-sf" />
+                            </div>
+                            <div className="related-body-sf">
+                                {account.contacts?.map(contact => (
+                                    <div key={contact._id} className="related-item-sf">
+                                        <div className="item-avatar-sf contact-sf"><Building2 size={12} /></div>
+                                        <div className="item-info-sf">
+                                            <div className="item-name-sf link-sf">{contact.firstName} {contact.lastName}</div>
+                                            <div className="item-sub-sf">
+                                                <div>Title: <span>{contact.title || 'Senior Account Manager'}</span></div>
+                                                <div>Role: <span>Decision Maker</span></div>
+                                            </div>
+                                        </div>
+                                        <ChevronDown size={14} className="item-caret-sf" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="related-widget-sf mt-md-sf">
+                            <div className="related-header-sf">
+                                <div className="related-title-box-sf">
+                                    <div className="widget-icon-box-sf opportunities-sf"><Briefcase size={16} /></div>
+                                    <span>Opportunities ({account.opportunities?.length || 0})</span>
+                                </div>
+                                <ChevronDown size={14} className="related-arrow-sf" />
+                            </div>
+                            <div className="related-body-sf">
+                                {account.opportunities?.map(opp => (
+                                    <div key={opp._id} className="related-item-sf">
+                                        <div className="item-avatar-sf opp-sf"><Briefcase size={12} /></div>
+                                        <div className="item-info-sf">
+                                            <div className="item-name-sf link-sf">{opp.name}</div>
+                                            <div className="item-sub-sf">
+                                                <div>Amount: <span>${opp.amount?.toLocaleString() || '0'}</span></div>
+                                                <div>Close Date: <span>{opp.closeDate ? new Date(opp.closeDate).toLocaleDateString() : '--'}</span></div>
+                                            </div>
+                                        </div>
+                                        <ChevronDown size={14} className="item-caret-sf" />
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="related-widget-sf mt-md-sf">
+                            <div className="related-header-sf">
+                                <div className="related-title-box-sf">
+                                    <div className="widget-icon-box-sf cases-sf"><MessageSquare size={16} /></div>
+                                    <span>Cases (0)</span>
+                                </div>
+                                <ChevronDown size={14} className="related-arrow-sf" />
+                            </div>
+                        </div>
+
+                        <div className="related-widget-sf mt-md-sf">
+                            <div className="related-header-sf">
+                                <div className="related-title-box-sf">
+                                    <div className="widget-icon-box-sf files-sf"><FileText size={16} /></div>
+                                    <span>Files (0)</span>
+                                </div>
+                                <ChevronDown size={14} className="related-arrow-sf" />
+                            </div>
+                            <div className="file-upload-zone-sf">
+                                <div className="upload-btn-sf">
+                                    <UploadCloud size={16} />
+                                    <span>Upload</span>
+                                </div>
+                                <div className="upload-hint-sf">or drop image</div>
+                            </div>
+                        </div>
+
+                        <div className="related-widget-sf mt-md-sf">
+                            <div className="related-header-sf">
+                                <div className="related-title-box-sf">
+                                    <div className="widget-icon-box-sf products-sf"><Package size={16} /></div>
+                                    <span>Products</span>
+                                </div>
+                                <ChevronDown size={14} className="related-arrow-sf" />
+                            </div>
+                            <div className="placeholder-content-sf">
+                                <span>Placeholder Content</span>
+                                <p>replace with a local component</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            {/* Modals */}
             {showAccountModal && (
                 <AccountModal
                     onClose={() => setShowAccountModal(false)}
-                    onSave={handleUpdateAccount}
+                    onSave={async (data) => {
+                        await apiClient.put(`/accounts/${id}`, data);
+                        toast.success('Account updated');
+                        fetchAccountDetails();
+                        setShowAccountModal(false);
+                    }}
                     initialData={account}
-                    title="Edit Contact Information"
-                />
-            )}
-
-            {showProjectModal && (
-                <ProjectModal
-                    onClose={() => setShowProjectModal(false)}
-                    onSave={handleSaveProject}
-                    initialData={{ account: account.companyName }}
-                    title={`New Project for ${account.companyName}`}
                 />
             )}
 

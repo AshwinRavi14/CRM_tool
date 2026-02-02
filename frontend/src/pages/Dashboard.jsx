@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     Plus,
@@ -7,151 +7,234 @@ import {
     Trophy,
     Activity,
     PhoneCall,
-    Users2
+    Users2,
+    CheckCircle2,
+    Clock,
+    User,
+    ChevronRight,
+    ArrowUpRight
 } from 'lucide-react';
 import {
-    Funnel,
-    FunnelChart,
+    PieChart,
+    Pie,
+    Cell,
+    BarChart,
+    Bar,
+    XAxis,
+    YAxis,
+    CartesianGrid,
     Tooltip,
     ResponsiveContainer,
-    Cell,
-    LabelList
+    Legend
 } from 'recharts';
+import { useAuth } from '../context/AuthContext';
 import './Dashboard.css';
 
 const Dashboard = () => {
+    const { user } = useAuth();
     const navigate = useNavigate();
-    const kpiData = [
-        { title: 'My Open Deals', value: '272', icon: <Trophy size={20} color="#38bdf8" />, change: '+5% vs last month' },
-        { title: 'My Untouched Deals', value: '304', icon: <Activity size={20} color="#818cf8" />, change: '-2% vs last month' },
-        { title: 'My Calls Today', value: '0', icon: <PhoneCall size={20} color="#10b981" />, change: '0% vs yesterday' },
-        { title: 'My Leads', value: '120', icon: <Users2 size={20} color="#f59e0b" />, change: '+12% vs last month' },
+
+    // Mock Data for Visily Layout
+    const leadStats = [
+        { name: 'New', value: 400, fill: '#0176d3' },
+        { name: 'Working', value: 300, fill: '#1589ee' },
+        { name: 'Nurturing', value: 200, fill: '#706e6b' },
+        { name: 'Qualified', value: 100, fill: '#2e844a' },
     ];
 
-    const pipelineData = [
-        { value: 111, name: 'Qualification', fill: '#0ea5e9' },
-        { value: 90, name: 'Needs Analysis', fill: '#38bdf8' },
-        { value: 75, name: 'Value Proposition', fill: '#818cf8' },
-        { value: 60, name: 'Proposal', fill: '#c084fc' },
-        { value: 45, name: 'Negotiation', fill: '#f472b6' },
-        { value: 30, name: 'Commitment', fill: '#fb7185' },
-        { value: 15, name: 'Won', fill: '#10b981' },
+    const opportunityData = [
+        { stage: 'Qualifying', amount: 50000 },
+        { stage: 'Proposal', amount: 35000 },
+        { stage: 'Negotiation', amount: 25000 },
+        { stage: 'Closed Won', amount: 15000 },
     ];
 
-    const tasks = [
-        { id: 1, subject: 'Send follow-up materials highlighting AI use cases', dueDate: 'Nov 23, 2025', status: 'Not Started', priority: 'Highest' },
-        { id: 2, subject: 'Refer CRM Videos to Sales Team', dueDate: 'Nov 14, 2024', status: 'In Progress', priority: 'Normal' },
-        { id: 3, subject: 'Get Approval from Manager for Discount', dueDate: 'Nov 13, 2024', status: 'In Progress', priority: 'Normal' },
-        { id: 4, subject: 'Finalize Proposal for Quantum AI Project', dueDate: 'Dec 01, 2025', status: 'Pending', priority: 'High' },
+    const recentActivity = [
+        { id: 1, user: 'Anthony Robinson', action: '2 contacts were created in your org recently', time: '9:00am', date: '3/20/24', type: 'contact' },
+        { id: 2, user: 'Brandon Taylor', action: '3 leads you own have updated stages', time: '9:00am', date: '3/20/24', type: 'lead' },
+        { id: 3, user: 'Christopher Brown', action: '3 leads you own have updated stages', time: '9:00am', date: '3/20/24', type: 'lead' },
+        { id: 4, user: 'William Davis', action: '2 contacts were created in your org recently', time: '9:00am', date: '3/20/24', type: 'contact' },
     ];
 
+    const topLeads = [
+        { account: 'BrightShift', name: 'Ashley Lopez', title: 'Sales Assistant' },
+        { account: 'Total Telecom', name: 'William Davis', title: 'VP of Technology' },
+        { account: 'GearVue', name: 'Elena Jimenez', title: 'UX Designer' },
+        { account: 'InfoCube', name: 'Jennifer Martinez', title: 'Sales Director' },
+    ];
+
+    const topAccounts = [
+        { name: 'Anna Fernandez', title: 'Senior Account Manager', role: 'Decision Maker' },
+        { name: 'Ashley Scott', title: 'Chief Financial Officer', role: 'Decision Maker' },
+        { name: 'Rachel Miller', title: 'Marketing Director', role: 'Decision Maker' },
+    ];
 
     return (
-        <div className="dashboard-container">
-            <div className="welcome-section glass-card">
-                <div className="welcome-info">
-                    <div className="welcome-avatar">
-                        <img src="https://ui-avatars.com/api/?name=Cleona+Davis&background=38bdf8&color=fff" alt="User" />
-                    </div>
-                    <div className="welcome-text">
-                        <h2>Welcome Cleona Davis <span className="wave-emoji">👋</span></h2>
-                        <p>Here's what's happening with your sales pipeline today.</p>
+        <div className="dashboard-container fade-in">
+            {/* Top Toolbar */}
+            <div className="dashboard-toolbar">
+                <div className="toolbar-left">
+                    <h1 className="page-title">Home</h1>
+                    <div className="toolbar-nav">
+                        <span>Dashboards</span>
                     </div>
                 </div>
-                <div className="welcome-actions">
-                    <button className="icon-btn-rounded pulse">
-                        <RefreshCw size={18} />
-                    </button>
-                    <div className="view-picker glass">
-                        <span>Cleona Davis's Home</span>
-                    </div>
+                <div className="toolbar-right">
+                    <button className="icon-btn-salesforce"><Plus size={16} /></button>
+                    <button className="icon-btn-salesforce"><RefreshCw size={16} /></button>
                 </div>
             </div>
 
-            <div className="kpi-grid">
-                {kpiData.map((kpi, index) => (
-                    <div key={index} className="kpi-card glass-card">
-                        <div className="kpi-header">
-                            <span className="kpi-title">{kpi.title}</span>
-                            <div className="kpi-icon-wrapper glass">
-                                {kpi.icon}
+            <div className="dashboard-grid-layout">
+                {/* Column 1: Recent Activity */}
+                <div className="dashboard-col">
+                    <div className="widget glass-card">
+                        <div className="widget-header">
+                            <h3>Recent Activity</h3>
+                            <MoreHorizontal size={16} className="text-muted" />
+                        </div>
+                        <div className="activity-list">
+                            {recentActivity.map((activity) => (
+                                <div key={activity.id} className="activity-item">
+                                    <div className={`activity-icon ${activity.type}`}>
+                                        {activity.type === 'contact' ? <User size={14} /> : <CheckCircle2 size={14} />}
+                                    </div>
+                                    <div className="activity-content">
+                                        <div className="activity-user">{activity.user}</div>
+                                        <p className="activity-text">{activity.action}</p>
+                                        <div className="activity-meta">
+                                            {activity.time} | {activity.date}
+                                        </div>
+                                    </div>
+                                    <ArrowUpRight size={14} className="activity-arrow" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                {/* Column 2: Leads */}
+                <div className="dashboard-col">
+                    <div className="widget glass-card">
+                        <div className="widget-header">
+                            <h3>Leads</h3>
+                            <MoreHorizontal size={16} className="text-muted" />
+                        </div>
+                        <div className="donut-container">
+                            <ResponsiveContainer width="100%" height={200}>
+                                <PieChart>
+                                    <Pie
+                                        data={leadStats}
+                                        innerRadius={60}
+                                        outerRadius={80}
+                                        paddingAngle={5}
+                                        dataKey="value"
+                                    >
+                                        {leadStats.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fill={entry.fill} />
+                                        ))}
+                                    </Pie>
+                                    <Tooltip />
+                                </PieChart>
+                            </ResponsiveContainer>
+                            <div className="donut-legend">
+                                {leadStats.map((stat) => (
+                                    <div key={stat.name} className="legend-item">
+                                        <span className="dot" style={{ backgroundColor: stat.fill }}></span>
+                                        <span className="label text-muted">{stat.name}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
-                        <div className="kpi-body">
-                            <span className="kpi-value">{kpi.value}</span>
-                            <span className={`kpi-change ${kpi.change.includes('+') ? 'positive' : 'neutral'}`}>
-                                {kpi.change}
-                            </span>
+                        <div className="view-all-link">View All</div>
+                    </div>
+
+                    <div className="widget glass-card mt-md">
+                        <div className="widget-header">
+                            <h3>Leads Summary</h3>
+                            <MoreHorizontal size={16} className="text-muted" />
+                        </div>
+                        <div className="mini-table-container">
+                            <table className="mini-table">
+                                <thead>
+                                    <tr>
+                                        <th>Account</th>
+                                        <th>Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {topLeads.map((lead, i) => (
+                                        <tr key={i}>
+                                            <td className="text-muted">{lead.account}</td>
+                                            <td className="text-primary-link">{lead.name}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                ))}
+                </div>
+
+                {/* Column 3: Accounts & Opportunities */}
+                <div className="dashboard-col">
+                    <div className="widget glass-card">
+                        <div className="widget-header">
+                            <h3>Accounts</h3>
+                            <MoreHorizontal size={16} className="text-muted" />
+                        </div>
+                        <div className="account-list-mini">
+                            {topAccounts.map((acc, i) => (
+                                <div key={i} className="mini-acc-item">
+                                    <div className="mini-acc-avatar">
+                                        <User size={16} color="white" />
+                                    </div>
+                                    <div className="mini-acc-info">
+                                        <div className="acc-name">{acc.name}</div>
+                                        <div className="acc-sub text-muted">{acc.title}</div>
+                                        <div className="acc-sub text-muted">{acc.role}</div>
+                                    </div>
+                                    <ChevronRight size={14} className="text-muted" />
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="widget glass-card mt-md">
+                        <div className="widget-header">
+                            <h3>Opportunities</h3>
+                            <MoreHorizontal size={16} className="text-muted" />
+                        </div>
+                        <div className="bar-chart-container">
+                            <ResponsiveContainer width="100%" height={180}>
+                                <BarChart data={opportunityData} layout="vertical">
+                                    <XAxis type="number" hide />
+                                    <YAxis type="category" dataKey="stage" hide />
+                                    <Tooltip cursor={{ fill: 'transparent' }} />
+                                    <Bar dataKey="amount" fill="#fe9339" radius={[0, 4, 4, 0]}>
+                                        {opportunityData.map((entry, index) => (
+                                            <Cell key={`cell-${index}`} fillOpacity={1 - index * 0.2} />
+                                        ))}
+                                    </Bar>
+                                </BarChart>
+                            </ResponsiveContainer>
+                            <div className="stages-labels">
+                                {opportunityData.map(d => (
+                                    <div key={d.stage} className="stage-row">
+                                        <span className="stage-name text-muted">{d.stage}</span>
+                                        <span className="stage-val">${d.amount / 1000}k</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        <div className="view-all-link">View All</div>
+                    </div>
+                </div>
             </div>
 
-            <div className="dashboard-grid">
-                <div className="tasks-section glass-card">
-                    <div className="section-header">
-                        <h3>My Open Tasks</h3>
-                        <button className="text-btn">View All</button>
-                    </div>
-                    <div className="table-responsive">
-                        <table className="dashboard-table">
-                            <thead>
-                                <tr>
-                                    <th>Subject</th>
-                                    <th>Due Date</th>
-                                    <th>Status</th>
-                                    <th>Priority</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {tasks.map(task => (
-                                    <tr key={task.id}>
-                                        <td className="subject-cell">{task.subject}</td>
-                                        <td>{task.dueDate}</td>
-                                        <td>
-                                            <span className={`status-badge ${task.status.replace(' ', '-').toLowerCase()}`}>
-                                                {task.status}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span className={`priority-badge ${task.priority.toLowerCase()}`}>
-                                                {task.priority}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div className="pipeline-section glass-card">
-                    <div className="section-header">
-                        <h3>My Pipeline Deals By Stage</h3>
-                        <button className="icon-btn-rounded">
-                            <MoreHorizontal size={18} />
-                        </button>
-                    </div>
-                    <div className="chart-container">
-                        <ResponsiveContainer width="100%" height={300}>
-                            <FunnelChart>
-                                <Tooltip
-                                    contentStyle={{ backgroundColor: '#1e293b', border: '1px solid rgba(255,255,255,0.1)', borderRadius: '8px' }}
-                                    itemStyle={{ color: '#fff' }}
-                                />
-                                <Funnel
-                                    data={pipelineData}
-                                    dataKey="value"
-                                >
-                                    <LabelList position="right" fill="#94a3b8" stroke="none" dataKey="name" />
-                                    {pipelineData.map((entry, index) => (
-                                        <Cell key={`cell-${index}`} fill={entry.fill} fillOpacity={0.8} />
-                                    ))}
-                                </Funnel>
-                            </FunnelChart>
-                        </ResponsiveContainer>
-                    </div>
-                </div>
+            {/* To-Do List bar at bottom like Salesforce */}
+            <div className="dashboard-footer-bar">
+                <CheckCircle2 size={14} />
+                <span>To-Do List</span>
             </div>
         </div>
     );
