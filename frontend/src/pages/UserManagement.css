@@ -1,0 +1,267 @@
+.user-mgmt-page {
+    padding: 0;
+}
+
+.user-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.role-badge {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.role-badge.admin {
+    background: rgba(1, 118, 211, 0.1);
+    color: var(--primary);
+    border: 1px solid rgba(1, 118, 211, 0.2);
+}
+
+.role-badge.sales_manager {
+    background: rgba(4, 132, 75, 0.1);
+    color: #04844b;
+    border: 1px solid rgba(4, 132, 75, 0.2);
+}
+
+.role-badge.sales_rep {
+    background: rgba(59, 130, 246, 0.1);
+    color: #3b82f6;
+    border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+.role-badge.account_manager {
+    background: rgba(139, 92, 246, 0.1);
+    color: #8b5cf6;
+    border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+.role-badge.project_manager {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid rgba(245, 158, 11, 0.2);
+}
+
+.role-badge.support_staff {
+    background: rgba(107, 114, 128, 0.1);
+    color: #6b7280;
+    border: 1px solid rgba(107, 114, 128, 0.2);
+}
+
+.role-select-sf {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 6px 12px;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    outline: none;
+    transition: all 0.2s;
+    width: 100%;
+    max-width: 200px;
+}
+
+.role-select-sf:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 2px rgba(1, 118, 211, 0.1);
+}
+
+.role-select-sf option {
+    color: #1a1a1a;
+    background-color: white;
+}
+
+.action-circle.danger {
+    color: #ea001e;
+}
+
+.action-circle.danger:hover {
+    background: rgba(234, 0, 30, 0.1);
+}
+
+.act.icon-btn-salesforce:hover {
+    background: #f3f3f3;
+}
+
+.section-subtitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--secondary);
+    margin-bottom: 15px;
+    padding-left: 5px;
+}
+
+/* Status Pills */
+.status-pill {
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.status-pill.pending {
+    background: #fff4e5;
+    color: #b95e00;
+    border: 1px solid #ffd8a8;
+}
+
+.status-pill.accepted {
+    background: #e6fffa;
+    color: #2c7a7b;
+    border: 1px solid #b2f5ea;
+}
+
+.status-pill.expired {
+    background: #fff5f5;
+    color: #c53030;
+    border: 1px solid #feb2b2;
+}
+
+/* Modal Styles */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-content {
+    width: 100%;
+    max-width: 450px;
+    padding: 0;
+    overflow: hidden;
+    background: white;
+}
+
+.modal-header {
+    padding: 20px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--secondary);
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: #a0aec0;
+    cursor: pointer;
+    line-height: 1;
+}
+
+form {
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #4a5568;
+}
+
+.sf-input,
+.sf-select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    font-size: 1rem;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+.sf-input::placeholder {
+    color: #a0aec0 !important;
+}
+
+.sf-input:focus,
+.sf-select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.1);
+}
+
+.sf-select option {
+    color: #1a1a1a;
+    background-color: white;
+}
+
+.modal-footer {
+    padding: 15px 20px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.secondary-btn-salesforce {
+    padding: 8px 16px;
+    background: white;
+    border: 1px solid #cbd5e0;
+    border-radius: 4px;
+    color: #4a5568;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.secondary-btn-salesforce:hover {
+    background: #f7fafc;
+}
+
+.primary-btn-salesforce {
+    padding: 8px 20px;
+    background: var(--primary);
+    border: none;
+    border-radius: 4px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.primary-btn-salesforce:hover {
+    background: #0163b3;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.primary-btn-salesforce:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.user-mgmt-content {
+    padding: 24px;
+}
+
+.entity-icon.user-mgmt {
+    background: linear-gradient(135deg, #0176d3, #014486);
+}
