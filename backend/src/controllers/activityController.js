@@ -3,29 +3,71 @@ const { success } = require('../utils/apiResponse');
 const asyncHandler = require('../middleware/asyncHandler');
 const AppError = require('../utils/AppError');
 
+/**
+ * Get activities for a specific entity
+ */
 const getActivities = asyncHandler(async (req, res, next) => {
-    const { lead, account, opportunity, project } = req.query;
-    const filter = {};
-    if (lead) filter.lead = lead;
-    if (account) filter.account = account;
-    if (opportunity) filter.opportunity = opportunity;
-    if (project) filter.project = project;
+    const { relatedToType, relatedToId } = req.query;
 
-    const activities = await Activity.find(filter)
-        .sort('-activityDate')
-        .populate('user', 'firstName lastName');
+    if (!relatedToType || !relatedToId) {
+        return next(new AppError('Entity type and ID are required', 400));
+    }
+
+    const activities = await Activity.find({
+        relatedToType,
+        relatedToId
+    }).sort('-createdAt').populate('owner', 'firstName lastName');
+
     res.status(200).json(success(activities));
 });
 
-const createActivity = asyncHandler(async (req, res, next) => {
-    const activity = await Activity.create({
+/**
+ * Log a new activity
+ */
+const logActivity = asyncHandler(async (req, res, next) => {
+    const activityData = {
         ...req.body,
-        user: req.user.id
-    });
+        owner: req.user.id
+    };
+
+    const activity = await Activity.create(activityData);
+
     res.status(201).json(success(activity, 'Activity logged successfully'));
+});
+
+/**
+ * Update activity status
+ */
+const updateActivityStatus = asyncHandler(async (req, res, next) => {
+    const { status } = req.body;
+
+    const activity = await Activity.findByIdAndUpdate(
+        req.params.id,
+        { status, completedDate: status === 'COMPLETED' ? new Date() : null },
+        { new: true }
+    );
+
+    if (!activity) {
+        return next(new AppError('Activity not found', 404));
+    }
+
+    res.status(200).json(success(activity, 'Activity updated successfully'));
+});
+
+/**
+ * Get all activities for the current user
+ */
+const getMyActivities = asyncHandler(async (req, res, next) => {
+    const activities = await Activity.find({
+        owner: req.user.id
+    }).sort('-createdAt').populate('relatedToId');
+
+    res.status(200).json(success(activities));
 });
 
 module.exports = {
     getActivities,
-    createActivity
+    logActivity,
+    updateActivityStatus,
+    getMyActivities
 };

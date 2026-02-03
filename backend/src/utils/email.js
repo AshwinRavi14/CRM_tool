@@ -1,12 +1,34 @@
-const sendEmail = async (options) => {
-    // In a real application, you would use a service like SendGrid or Nodemailer
-    // For this demo/MVP, we will log the email content to the console
+const nodemailer = require('nodemailer');
+const logger = require('./logger');
 
-    console.log('--- EMAIL SENT ---');
-    console.log(`To: ${options.email}`);
-    console.log(`Subject: ${options.subject}`);
-    console.log(`Message: \n${options.message}`);
-    console.log('------------------');
+const sendEmail = async (options) => {
+    // Check if SMTP configuration is provided
+    if (!process.env.SMTP_HOST || !process.env.SMTP_USER) {
+        logger.info('--- EMAIL LOGGED (NO SMTP CONFIGURED) ---');
+        logger.info(`To: ${options.email}`);
+        logger.info(`Subject: ${options.subject}`);
+        logger.info(`Message: \n${options.message}`);
+        logger.info('------------------------------------------');
+        return;
+    }
+
+    const transporter = nodemailer.createTransport({
+        host: process.env.SMTP_HOST,
+        port: process.env.SMTP_PORT,
+        auth: {
+            user: process.env.SMTP_USER,
+            pass: process.env.SMTP_PASS
+        }
+    });
+
+    const mailOptions = {
+        from: `Wersel CRM <${process.env.FROM_EMAIL || 'noreply@wersel.ai'}>`,
+        to: options.email,
+        subject: options.subject,
+        text: options.message
+    };
+
+    await transporter.sendMail(mailOptions);
 };
 
 module.exports = sendEmail;

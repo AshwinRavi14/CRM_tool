@@ -16,7 +16,8 @@ const getLeads = asyncHandler(async (req, res, next) => {
     const filter = {};
     if (req.user.role !== 'ADMIN') {
         const reportIds = await getReports(req.user.id);
-        filter.owner = { $in: [req.user.id, ...reportIds] };
+        // Sales Reps/Managers see their own leads + their reports' leads + the unassigned "Lead Pool"
+        filter.owner = { $in: [req.user.id, ...reportIds, null] };
     }
 
     if (status) filter.status = status;

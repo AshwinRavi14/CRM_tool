@@ -5,6 +5,7 @@ const asyncHandler = require('../middleware/asyncHandler');
 const AppError = require('../utils/AppError');
 const crypto = require('crypto');
 const sendEmail = require('../utils/email');
+const logger = require('../utils/logger');
 
 /**
  * Generate Access Token
@@ -60,30 +61,34 @@ const sendTokenResponse = async (user, statusCode, res, message) => {
  * Register user
  */
 const register = asyncHandler(async (req, res, next) => {
-    const { firstName, lastName, email, password, role, manager } = req.body;
+    const { firstName, lastName, email, password, companyName } = req.body;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
         return next(new AppError('User already exists', 400));
     }
 
+    // Role is strictly defaulted to SALES_REP for public registrations
+    // Industry standard: Admin assigns roles later
     const user = await User.create({
         firstName,
         lastName,
         email,
         password,
-        role,
+        companyName,
+        role: 'SALES_REP',
         isVerified: true // Auto-verify for easy initial setup/demo
     });
 
-    res.status(201).json(success(null, 'User registered successfully. You can now log in.'));
+    res.status(201).json(success(null, 'User registered successfully. An administrator will assign your relevant role.'));
 });
 
 /**
  * Login user
  */
 const login = asyncHandler(async (req, res, next) => {
-    const { email, password } = req.body;
+    const { email: rawEmail, password } = req.body;
+    const email = rawEmail ? rawEmail.trim().toLowerCase() : '';
 
     if (!email || !password) {
         return next(new AppError('Please provide an email and password', 400));

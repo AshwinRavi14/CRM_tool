@@ -14,24 +14,26 @@ async function runTests() {
     try {
         // 1. Auth Test: Register
         console.log('1. Testing User Registration...');
+        const testEmail = `test_${Date.now()}@wersel.ai`;
         const regRes = await axios.post(`${API_URL}/auth/register`, {
             firstName: 'Test',
             lastName: 'User',
-            email: `test_${Date.now()}@wersel.ai`,
+            email: testEmail,
             password: 'password123',
             role: 'ADMIN'
         });
         console.log('✅ Registration Successful');
-        authToken = regRes.data.data.token;
-        testUserId = regRes.data.data.user.id;
 
         // 2. Auth Test: Login
         console.log('2. Testing User Login...');
         const loginRes = await axios.post(`${API_URL}/auth/login`, {
-            email: regRes.data.data.user.email,
+            email: testEmail,
             password: 'password123'
         });
         console.log('✅ Login Successful');
+
+        authToken = loginRes.data.data.accessToken;
+        testUserId = loginRes.data.data.user.id;
 
         const headers = { Authorization: `Bearer ${authToken}` };
 

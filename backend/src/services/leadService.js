@@ -1,18 +1,29 @@
 const Lead = require('../models/Lead');
 const Account = require('../models/Account');
 const Contact = require('../models/Contact');
+const Activity = require('../models/Activity');
 const { generateAccountNumber, generateLeadNumber } = require('../utils/numberGenerator');
 const { publishEvent } = require('./eventService');
+const assignmentService = require('./assignmentService');
 
 /**
  * Lead Service handles all operations related to leads
  */
 const createLead = async (leadData, userId) => {
     const leadNumber = generateLeadNumber();
+
+    // Automation: If source is LINKEDIN or owner is not provided, 
+    // trigger automated round-robin assignment
+    let ownerId = userId;
+    if (!ownerId || leadData.source === 'LINKEDIN') {
+        const assignedId = await assignmentService.assignLeadRoundRobin();
+        if (assignedId) ownerId = assignedId;
+    }
+
     const lead = await Lead.create({
         ...leadData,
         leadNumber,
-        owner: userId
+        owner: ownerId
     });
     return lead;
 };
@@ -60,7 +71,7 @@ const convertLead = async (leadId, userId) => {
         accountType: 'PROSPECT',
         phone: lead.phone,
         email: lead.email,
-        owner: lead.owner,
+        owner: lead.owner || userId, // Fallback to current user if unassigned
         createdBy: userId,
         status: 'ACTIVE'
     });
@@ -72,15 +83,29 @@ const convertLead = async (leadId, userId) => {
         lastName: lead.lastName,
         email: lead.email,
         phone: lead.phone,
-        isPrimary: true
+        isPrimary: true,
+        owner: account.owner // Sync owner
     });
 
-    // 3. Update Lead Status
+    // 3. Create Automated "Discovery Task" for the Sales Rep
+    await Activity.create({
+        type: 'TASK',
+        subject: `Discovery Call: ${account.companyName}`,
+        description: `Automated task created from Lead conversion (${lead.leadNumber}). Please schedule a discovery session.`,
+        status: 'PLANNED',
+        dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000), // Due in 2 days
+        relatedToType: 'Account',
+        relatedToId: account._id,
+        owner: account.owner
+    });
+
+    // 4. Update Lead Status
     lead.status = 'CONVERTED';
     lead.convertedAccount = account._id;
+    if (!lead.owner) lead.owner = userId; // Take ownership on conversion if unassigned
     await lead.save();
 
-    // 4. Publish Event
+    // 5. Publish Event
     await publishEvent('LeadConverted', lead._id, 'Lead', {
         accountId: account._id,
         contactId: contact._id

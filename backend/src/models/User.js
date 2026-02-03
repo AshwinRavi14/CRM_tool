@@ -53,6 +53,10 @@ const userSchema = new mongoose.Schema({
     isVerified: {
         type: Boolean,
         default: false
+    },
+    lastAssignedAt: {
+        type: Date,
+        default: Date.now
     }
 }, {
     timestamps: true

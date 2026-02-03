@@ -122,8 +122,12 @@ const activityRoutes = require('./routes/activityRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
 const searchRoutes = require('./routes/searchRoutes');
 const bulkRoutes = require('./routes/bulkRoutes');
+const userRoutes = require('./routes/userRoutes');
+const invitationRoutes = require('./routes/invitationRoutes');
 
 app.use('/api/v1/auth', authRoutes);
+app.use('/api/v1/users', userRoutes);
+app.use('/api/v1/invitations', invitationRoutes);
 app.use('/api/v1/leads', leadRoutes);
 app.use('/api/v1/opportunities', opportunityRoutes);
 app.use('/api/v1/accounts', accountRoutes);
@@ -135,7 +139,9 @@ app.use('/api/v1/search', searchRoutes);
 app.use('/api/v1/bulk', bulkRoutes);
 app.use('/api/v1/reports', require('./routes/reportRoutes')); // Register Reports
 
-// Global Error Handler
+app.get('/api/v1/auth/register', (req, res) => {
+    res.status(403).json({ success: false, message: 'Public registration is disabled. Please contact an administrator for an invitation.' });
+});
 app.use(errorHandler);
 
 app.get('/', (req, res) => {
