@@ -1,0 +1,196 @@
+.activity-feed-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.feed-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.feed-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    color: var(--secondary);
+}
+
+.btn-add-activity {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    background: white;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--primary);
+    cursor: pointer;
+}
+
+.btn-add-activity:hover {
+    background: #f8fafc;
+}
+
+.log-activity-form {
+    padding: 15px;
+    border: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: #ffffff;
+}
+
+.form-row {
+    display: flex;
+    gap: 10px;
+}
+
+.form-row select,
+.form-row input {
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 0.9rem;
+}
+
+.form-row input {
+    flex: 1;
+}
+
+.log-activity-form textarea {
+    padding: 8px;
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    height: 80px;
+    resize: none;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.btn-submit {
+    background: var(--primary);
+    color: white;
+    border: none;
+    padding: 6px 15px;
+    border-radius: 4px;
+    font-weight: 600;
+}
+
+/* Timeline Styles */
+.timeline {
+    position: relative;
+    padding-left: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 12px;
+    top: 5px;
+    bottom: 5px;
+    width: 2px;
+    background: #e2e8f0;
+}
+
+.timeline-item {
+    position: relative;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: -30px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+    z-index: 1;
+    color: #475569;
+}
+
+.timeline-item.call .timeline-icon {
+    background: #eef2ff;
+    color: #4f46e5;
+}
+
+.timeline-item.email .timeline-icon {
+    background: #f0fdf4;
+    color: #16a34a;
+}
+
+.timeline-item.meeting .timeline-icon {
+    background: #fff7ed;
+    color: #ea580c;
+}
+
+.timeline-item.task .timeline-icon {
+    background: #fdf2f8;
+    color: #db2777;
+}
+
+.timeline-content {
+    background: white;
+    border: 1px solid #edf2f7;
+    border-radius: 6px;
+    padding: 12px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.timeline-subject {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #1e293b;
+}
+
+.timeline-time {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.timeline-desc {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #475569;
+    line-height: 1.4;
+}
+
+.timeline-footer {
+    margin-top: 8px;
+    display: flex;
+    gap: 10px;
+}
+
+.owner-badge {
+    font-size: 0.7rem;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.loading-state,
+.empty-state {
+    padding: 20px;
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.9rem;
+}
