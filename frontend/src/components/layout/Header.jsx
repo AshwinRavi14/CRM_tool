@@ -44,6 +44,7 @@ const Header = () => {
         { name: 'Projects', path: '/projects' },
         { name: 'Reports', path: '/reports' },
         { name: 'Dashboards', path: '/analytics' },
+        ...(user?.role === 'ADMIN' ? [{ name: 'Users', path: '/users' }] : []),
     ];
 
     useEffect(() => {

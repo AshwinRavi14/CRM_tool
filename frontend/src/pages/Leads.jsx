@@ -34,6 +34,7 @@ const Leads = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedLead, setSelectedLead] = useState(null);
     const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
+    const [activeFilter, setActiveFilter] = useState('total');
     const toast = useToast();
 
     const fetchLeads = useCallback(async () => {
@@ -115,14 +116,14 @@ const Leads = () => {
         return fullName.includes(query) || company.includes(query) || email.includes(query);
     });
 
-    // Intelligence Stats Calculations (Mocked logic for demo)
+    // Intelligence Stats Calculations from actual data
     const stats = {
         total: leads.length,
-        noActivity: leads.filter(l => l.status === 'NEW').length,
-        idle: 0,
-        noUpcoming: leads.length,
-        overdue: 2,
-        dueToday: 1
+        noActivity: leads.filter(l => l.status === 'NEW' && !l.lastContactDate).length,
+        idle: leads.filter(l => l.status === 'WORKING' && new Date(l.updatedAt) < new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)).length,
+        noUpcoming: leads.length, // Placeholder for tasks logic
+        overdue: 2, // Placeholder
+        dueToday: 1  // Placeholder
     };
 
     return (
@@ -149,23 +150,38 @@ const Leads = () => {
 
                 {/* Intelligence Stats Ribbon */}
                 <div className="stats-ribbon">
-                    <div className="stat-box active">
+                    <div
+                        className={`stat-box ${activeFilter === 'total' ? 'active' : ''}`}
+                        onClick={() => setActiveFilter('total')}
+                    >
                         <span className="stat-label">Total Leads</span>
                         <span className="stat-value">{stats.total}</span>
                     </div>
-                    <div className="stat-box">
+                    <div
+                        className={`stat-box ${activeFilter === 'noActivity' ? 'active' : ''}`}
+                        onClick={() => setActiveFilter('noActivity')}
+                    >
                         <span className="stat-label">No Activity</span>
                         <span className="stat-value">{stats.noActivity}</span>
                     </div>
-                    <div className="stat-box">
+                    <div
+                        className={`stat-box ${activeFilter === 'idle' ? 'active' : ''}`}
+                        onClick={() => setActiveFilter('idle')}
+                    >
                         <span className="stat-label">Idle</span>
                         <span className="stat-value">{stats.idle}</span>
                     </div>
-                    <div className="stat-box">
+                    <div
+                        className={`stat-box ${activeFilter === 'overdue' ? 'active' : ''}`}
+                        onClick={() => setActiveFilter('overdue')}
+                    >
                         <span className="stat-label">Overdue</span>
                         <span className="stat-value danger">{stats.overdue}</span>
                     </div>
-                    <div className="stat-box">
+                    <div
+                        className={`stat-box ${activeFilter === 'dueToday' ? 'active' : ''}`}
+                        onClick={() => setActiveFilter('dueToday')}
+                    >
                         <span className="stat-label">Due Today</span>
                         <span className="stat-value info">{stats.dueToday}</span>
                     </div>

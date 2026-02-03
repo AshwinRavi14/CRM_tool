@@ -13,11 +13,12 @@ import ProjectDetails from './pages/ProjectDetails';
 import AccountDetails from './pages/AccountDetails';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
+import UserManagement from './pages/UserManagement';
 import './styles/tokens.css';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import Login from './pages/Login';
-import Signup from './pages/Signup';
+import Onboarding from './pages/Onboarding';
 
 
 // Placeholder Pages for future implementation
@@ -49,13 +50,13 @@ function App() {
                 <Route path=":category" element={<ReportList />} />
               </Route>
               <Route path="analytics" element={<Analytics />} />
-              <Route path="analytics" element={<Analytics />} />
               <Route path="settings" element={<Settings />} />
+              <Route path="users" element={<UserManagement />} />
             </Route>
 
             {/* Auth Routes */}
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<Signup />} />
+            <Route path="/onboarding/:token" element={<Onboarding />} />
 
 
             {/* 404 Redirect */}

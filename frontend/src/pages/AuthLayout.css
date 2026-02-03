@@ -91,10 +91,21 @@
     font-size: 0.9rem;
     outline: none;
     transition: border-color 0.2s;
+    color: #000000 !important;
+    background-color: #ffffff !important;
+}
+
+.signup-form-sf input::placeholder {
+    color: #a0aec0 !important;
 }
 
 .signup-form-sf input:focus {
     border-color: #0176d3;
+}
+
+.signup-form-sf option {
+    color: #1a1a1a;
+    background-color: white;
 }
 
 .terms-container-sf {

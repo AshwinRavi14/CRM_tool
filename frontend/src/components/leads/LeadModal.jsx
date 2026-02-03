@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { X, User, Building2, Mail, Phone, Tag, Briefcase, Info, ChevronDown, MapPin, Globe, Star } from 'lucide-react';
 import apiClient from '../../services/apiClient';
 import { useToast } from '../../context/ToastContext';
+import ActivityFeed from '../common/ActivityFeed';
 import './LeadModal.css';
 
 const LeadModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
@@ -186,6 +187,13 @@ const LeadModal = ({ isOpen, onClose, onSuccess, initialData = null }) => {
                             </div>
                         </div>
                     </div>
+
+                    {/* Section 3: Activity Timeline (Only for existing leads) */}
+                    {initialData && (
+                        <div className="form-section-sf mt-sm">
+                            <ActivityFeed relatedToType="Lead" relatedToId={initialData._id} />
+                        </div>
+                    )}
 
                     <div className="modal-footer-sf">
                         <button type="button" className="btn-sf secondary" onClick={onClose}>Cancel</button>

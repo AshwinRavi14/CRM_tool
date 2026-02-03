@@ -28,18 +28,60 @@ import {
     Legend
 } from 'recharts';
 import { useAuth } from '../context/AuthContext';
+import apiClient from '../services/apiClient';
 import './Dashboard.css';
 
 const Dashboard = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
+    const [leads, setLeads] = useState([]);
+    const [tasks, setTasks] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [stats, setStats] = useState({
+        new: 0,
+        working: 0,
+        nurturing: 0,
+        qualified: 0
+    });
 
-    // Mock Data for Visily Layout
+    useEffect(() => {
+        const fetchDashboardData = async () => {
+            try {
+                setIsLoading(true);
+                // 1. Fetch leads (filters will be applied by backend based on role)
+                const res = await apiClient.get('/leads');
+                const leadData = Array.isArray(res.data) ? res.data : (res.data.leads || []);
+                setLeads(leadData.slice(0, 5)); // Get top 5 recent leads
+
+                // Calculate stats for donut chart
+                const counts = {
+                    new: leadData.filter(l => l.status === 'NEW').length,
+                    working: leadData.filter(l => l.status === 'WORKING').length,
+                    nurturing: leadData.filter(l => l.status === 'NURTURING').length,
+                    qualified: leadData.filter(l => l.status === 'QUALIFIED').length
+                };
+                setStats(counts);
+
+                // 2. Fetch upcoming activities/tasks for current user
+                const actRes = await apiClient.get('/activities/my');
+                const activityData = Array.isArray(actRes.data) ? actRes.data : (actRes.data.activities || []);
+                setTasks(activityData.slice(0, 5));
+            } catch (err) {
+                console.error('Failed to fetch dashboard data', err);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        fetchDashboardData();
+    }, []);
+
+    // Data for the Donut Chart (Personal Pipeline)
     const leadStats = [
-        { name: 'New', value: 400, fill: '#0176d3' },
-        { name: 'Working', value: 300, fill: '#1589ee' },
-        { name: 'Nurturing', value: 200, fill: '#706e6b' },
-        { name: 'Qualified', value: 100, fill: '#2e844a' },
+        { name: 'New', value: stats.new || 1, fill: '#0176d3' },
+        { name: 'Working', value: stats.working || 0, fill: '#1589ee' },
+        { name: 'Nurturing', value: stats.nurturing || 0, fill: '#706e6b' },
+        { name: 'Qualified', value: stats.qualified || 0, fill: '#2e844a' },
     ];
 
     const opportunityData = [
@@ -49,19 +91,7 @@ const Dashboard = () => {
         { stage: 'Closed Won', amount: 15000 },
     ];
 
-    const recentActivity = [
-        { id: 1, user: 'Anthony Robinson', action: '2 contacts were created in your org recently', time: '9:00am', date: '3/20/24', type: 'contact' },
-        { id: 2, user: 'Brandon Taylor', action: '3 leads you own have updated stages', time: '9:00am', date: '3/20/24', type: 'lead' },
-        { id: 3, user: 'Christopher Brown', action: '3 leads you own have updated stages', time: '9:00am', date: '3/20/24', type: 'lead' },
-        { id: 4, user: 'William Davis', action: '2 contacts were created in your org recently', time: '9:00am', date: '3/20/24', type: 'contact' },
-    ];
 
-    const topLeads = [
-        { account: 'BrightShift', name: 'Ashley Lopez', title: 'Sales Assistant' },
-        { account: 'Total Telecom', name: 'William Davis', title: 'VP of Technology' },
-        { account: 'GearVue', name: 'Elena Jimenez', title: 'UX Designer' },
-        { account: 'InfoCube', name: 'Jennifer Martinez', title: 'Sales Director' },
-    ];
 
     const topAccounts = [
         { name: 'Anna Fernandez', title: 'Senior Account Manager', role: 'Decision Maker' },
@@ -94,16 +124,22 @@ const Dashboard = () => {
                             <MoreHorizontal size={16} className="text-muted" />
                         </div>
                         <div className="activity-list">
-                            {recentActivity.map((activity) => (
-                                <div key={activity.id} className="activity-item">
-                                    <div className={`activity-icon ${activity.type}`}>
-                                        {activity.type === 'contact' ? <User size={14} /> : <CheckCircle2 size={14} />}
+                            {isLoading ? (
+                                <div className="text-center p-md">Loading activities...</div>
+                            ) : tasks.length === 0 ? (
+                                <div className="text-center p-md text-muted">No recent activities</div>
+                            ) : tasks.map((activity) => (
+                                <div key={activity._id} className="activity-item">
+                                    <div className={`activity-icon ${activity.type?.toLowerCase()}`}>
+                                        {activity.type === 'CALL' ? <PhoneCall size={14} /> :
+                                            activity.type === 'EMAIL' ? <Mail size={14} /> :
+                                                <CheckCircle2 size={14} />}
                                     </div>
                                     <div className="activity-content">
-                                        <div className="activity-user">{activity.user}</div>
-                                        <p className="activity-text">{activity.action}</p>
+                                        <div className="activity-user">{activity.subject}</div>
+                                        <p className="activity-text">{activity.description || 'No description'}</p>
                                         <div className="activity-meta">
-                                            {activity.time} | {activity.date}
+                                            {new Date(activity.createdAt).toLocaleDateString()}
                                         </div>
                                     </div>
                                     <ArrowUpRight size={14} className="activity-arrow" />
@@ -158,15 +194,25 @@ const Dashboard = () => {
                             <table className="mini-table">
                                 <thead>
                                     <tr>
-                                        <th>Account</th>
+                                        <th>Source</th>
                                         <th>Name</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {topLeads.map((lead, i) => (
-                                        <tr key={i}>
-                                            <td className="text-muted">{lead.account}</td>
-                                            <td className="text-primary-link">{lead.name}</td>
+                                    {isLoading ? (
+                                        <tr><td colSpan="2" className="text-center">Loading...</td></tr>
+                                    ) : leads.length === 0 ? (
+                                        <tr><td colSpan="2" className="text-center">No leads found</td></tr>
+                                    ) : leads.map((lead, i) => (
+                                        <tr key={lead._id}>
+                                            <td className="text-muted">
+                                                <span className={`source-tag ${lead.source?.toLowerCase()}`}>
+                                                    {lead.source || 'WEB'}
+                                                </span>
+                                            </td>
+                                            <td className="text-primary-link" onClick={() => navigate('/leads')}>
+                                                {lead.firstName} {lead.lastName}
+                                            </td>
                                         </tr>
                                     ))}
                                 </tbody>

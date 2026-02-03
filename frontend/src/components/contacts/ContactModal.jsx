@@ -119,11 +119,10 @@ const ContactModal = ({ onClose, onSuccess, initialAccount = null }) => {
                             onChange={handleInteract}
                             className="glass-input"
                             disabled={!!initialAccount}
-                            style={{ colorScheme: 'dark' }}
                         >
                             <option value="">Select an account</option>
                             {accounts.map(acc => (
-                                <option key={acc._id} value={acc._id}>
+                                <option key={acc._id} value={acc._id} style={{ color: '#000000', background: '#ffffff' }}>
                                     {acc.companyName}
                                 </option>
                             ))}
