@@ -31,3 +31,5 @@ Then verify:
 *.log
 logs/
 backend/logs/
+
+* text=auto
