@@ -17,6 +17,11 @@ const activitySchema = new mongoose.Schema({
         enum: ['PLANNED', 'COMPLETED', 'CANCELLED'],
         default: 'COMPLETED'
     },
+    priority: {
+        type: String,
+        enum: ['LOW', 'NORMAL', 'HIGH'],
+        default: 'NORMAL'
+    },
     dueDate: Date,
     completedDate: Date,
 

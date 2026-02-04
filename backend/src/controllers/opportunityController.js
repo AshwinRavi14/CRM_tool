@@ -95,6 +95,48 @@ const getPipeline = asyncHandler(async (req, res, next) => {
     res.status(200).json(success(pipeline));
 });
 
+const logger = require('../utils/logger');
+
+/**
+ * Get forecast data for user
+ */
+const getForecasts = asyncHandler(async (req, res, next) => {
+    // Ownership & Hierarchy Filter
+    const filter = {};
+    if (req.user.role !== 'ADMIN') {
+        const reportIds = await getReports(req.user.id);
+        filter.owner = { $in: [req.user.id, ...reportIds] };
+    }
+
+    const opportunities = await Opportunity.find(filter)
+        .populate('account', 'companyName')
+        .populate('primaryContact', 'firstName lastName')
+        .populate('owner', 'firstName lastName');
+
+    // Aggregate metrics
+    const forecasts = {
+        quota: 2000, // Placeholder as Quota is not in the model yet
+        commit: 0,
+        bestCase: 0,
+        openPipeline: 0,
+        opportunities: opportunities
+    };
+
+    opportunities.forEach(opp => {
+        if (opp.stage === 'CLOSED_WON' || opp.stage === 'NEGOTIATION' || opp.stage === 'PROPOSAL') {
+            forecasts.commit += opp.amount || 0;
+        }
+        if (opp.stage !== 'CLOSED_LOST') {
+            forecasts.bestCase += opp.amount || 0;
+        }
+        if (opp.stage !== 'CLOSED_WON' && opp.stage !== 'CLOSED_LOST') {
+            forecasts.openPipeline += opp.amount || 0;
+        }
+    });
+
+    res.status(200).json(success(forecasts));
+});
+
 /**
  * Get single opportunity
  */
@@ -174,5 +216,6 @@ module.exports = {
     updateOpportunity,
     deleteOpportunity,
     advanceStage,
-    getPipeline
+    getPipeline,
+    getForecasts
 };

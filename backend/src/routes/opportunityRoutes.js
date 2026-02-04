@@ -6,7 +6,8 @@ const {
     updateOpportunity,
     deleteOpportunity,
     advanceStage,
-    getPipeline
+    getPipeline,
+    getForecasts
 } = require('../controllers/opportunityController');
 const { protect } = require('../middleware/auth');
 
@@ -17,6 +18,7 @@ router.use(protect);
 router.get('/', getOpportunities);
 router.post('/', createOpportunity);
 router.get('/pipeline', getPipeline);
+router.get('/forecasts', getForecasts);
 router.get('/:id', getOpportunity);
 router.put('/:id', updateOpportunity);
 router.delete('/:id', deleteOpportunity);
