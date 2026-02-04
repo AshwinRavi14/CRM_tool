@@ -14,6 +14,8 @@ import AccountDetails from './pages/AccountDetails';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
 import UserManagement from './pages/UserManagement';
+import Forecasts from './pages/Forecasts';
+import ActivitiesReport from './pages/ActivitiesReport';
 import './styles/tokens.css';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
@@ -47,11 +49,13 @@ function App() {
               <Route path="projects/:id" element={<ProjectDetails />} />
               <Route path="reports" element={<Reports />}>
                 <Route index element={<Navigate to="sales" replace />} />
+                <Route path="activity/salesperson" element={<ActivitiesReport />} />
                 <Route path=":category" element={<ReportList />} />
               </Route>
               <Route path="analytics" element={<Analytics />} />
               <Route path="settings" element={<Settings />} />
               <Route path="users" element={<UserManagement />} />
+              <Route path="forecasts" element={<Forecasts />} />
             </Route>
 
             {/* Auth Routes */}

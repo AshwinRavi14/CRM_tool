@@ -29,6 +29,9 @@ apiClient.interceptors.request.use(
         const token = sessionStorage.getItem('crm_access_token');
         if (token) {
             config.headers.Authorization = `Bearer ${token}`;
+            console.log('Sending token for URL:', config.url);
+        } else {
+            console.warn('NO TOKEN in sessionStorage for URL:', config.url);
         }
         return config;
     },

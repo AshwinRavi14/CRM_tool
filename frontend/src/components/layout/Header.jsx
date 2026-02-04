@@ -12,6 +12,8 @@ import {
     Star,
     Plus,
     Home,
+    Sparkles,
+    Mountain,
     Users,
     UserSquare2,
     Building2,
@@ -41,6 +43,7 @@ const Header = () => {
         { name: 'Contacts', path: '/contacts' },
         { name: 'Accounts', path: '/accounts' },
         { name: 'Opportunities', path: '/opportunities' },
+        { name: 'Forecasts', path: '/forecasts' },
         { name: 'Projects', path: '/projects' },
         { name: 'Reports', path: '/reports' },
         { name: 'Dashboards', path: '/analytics' },
@@ -144,22 +147,30 @@ const Header = () => {
                 </div>
 
                 <div className="header-right-sf">
-                    <button className="icon-btn-sf"><Star size={18} /></button>
+                    <button className="icon-btn-sf einstein-btn-sf">
+                        <Sparkles size={18} />
+                    </button>
+                    <div className="favorites-pill-sf">
+                        <button className="fav-star-btn"><Star size={18} /></button>
+                        <button className="fav-dropdown-btn"><ChevronDown size={14} /></button>
+                    </div>
                     <button className="icon-btn-sf"><Plus size={18} /></button>
+                    <button className="icon-btn-sf"><Mountain size={18} /></button>
                     <button className="icon-btn-sf"><HelpCircle size={18} /></button>
                     <button className="icon-btn-sf"><Settings size={18} /></button>
                     <div className="divider-sf" />
-                    <button className="icon-btn-sf relative">
+                    <button className="icon-btn-sf relative notification-btn-sf">
                         <Bell size={18} />
                         <span className="badge-sf" />
                     </button>
-                    <div className="profile-trigger-sf" onClick={() => toggleMenu('profile')}>
-                        <img
-                            src={`https://ui-avatars.com/api/?name=${getInitials()}&background=0176d3&color=fff`}
-                            alt="Profile"
-                            className="avatar-sf"
-                        />
-                        <ChevronDown size={12} />
+                    <div className="profile-container-sf" onClick={() => toggleMenu('profile')}>
+                        <div className="avatar-circle-sf">
+                            <img
+                                src={`https://ui-avatars.com/api/?name=${getInitials()}&background=707e94&color=fff`}
+                                alt="Profile"
+                                className="avatar-img-sf"
+                            />
+                        </div>
                         {activeMenu === 'profile' && (
                             <div className="dropdown-menu-sf glass-card">
                                 <div className="profile-summary">
@@ -180,7 +191,7 @@ const Header = () => {
             </div>
 
             {/* Bottom Row: Navigation Tabs */}
-            <div className="header-nav-row">
+            < div className="header-nav-row" >
                 <nav className="nav-tabs-sf">
                     {navItems.map((item) => (
                         <NavLink
@@ -198,8 +209,8 @@ const Header = () => {
                         <ChevronDown size={12} className="nav-chevron-sf" />
                     </div>
                 </nav>
-            </div>
-        </header>
+            </div >
+        </header >
     );
 };
 

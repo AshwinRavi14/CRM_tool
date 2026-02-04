@@ -91,7 +91,17 @@ const ReportList = () => {
                                             <div className="report-icon-wrapper">
                                                 <Icon size={18} />
                                             </div>
-                                            <span>{report.name}</span>
+                                            <span
+                                                className="report-link"
+                                                onClick={() => {
+                                                    if (report.category === 'Activity') {
+                                                        window.location.href = '/reports/activity/salesperson';
+                                                    }
+                                                }}
+                                                style={{ cursor: report.category === 'Activity' ? 'pointer' : 'default', color: report.category === 'Activity' ? '#0176d3' : 'inherit' }}
+                                            >
+                                                {report.name}
+                                            </span>
                                         </td>
                                         <td><span className="category-tag glass">{report.category}</span></td>
                                         <td>{report.frequency}</td>
