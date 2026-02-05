@@ -57,6 +57,18 @@ const userSchema = new mongoose.Schema({
     lastAssignedAt: {
         type: Date,
         default: Date.now
+    },
+    company: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Company'
+    },
+    onboardingCompleted: {
+        type: Boolean,
+        default: false
+    },
+    onboardingStep: {
+        type: Number,
+        default: 1
     }
 }, {
     timestamps: true

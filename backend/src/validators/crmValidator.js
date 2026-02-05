@@ -1,12 +1,11 @@
 const Joi = require('joi');
 
 const registerSchema = Joi.object({
-    firstName: Joi.string().required(),
-    lastName: Joi.string().required(),
+    name: Joi.string().required(),
     email: Joi.string().email().required(),
     password: Joi.string().min(6).required(),
-    role: Joi.string().valid('ADMIN', 'SALES_MANAGER', 'SALES_REP', 'ACCOUNT_MANAGER', 'PROJECT_MANAGER', 'SUPPORT_STAFF'),
-    manager: Joi.string().hex().length(24) // Optional manager ID
+    companyName: Joi.string().max(100).optional(),
+    role: Joi.string().valid('ADMIN', 'SALES_MANAGER', 'SALES_REP', 'ACCOUNT_MANAGER', 'PROJECT_MANAGER', 'SUPPORT_STAFF').optional()
 });
 
 const loginSchema = Joi.object({

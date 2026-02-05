@@ -26,10 +26,7 @@ const router = express.Router();
  *     summary: Register a new user
  *     tags: [Auth]
  */
-// router.post('/register', validate(registerSchema), register);
-router.post('/register', (req, res) => {
-    res.status(403).json({ success: false, message: 'Public registration is disabled. Please contact an administrator for an invitation.' });
-});
+router.post('/register', validate(registerSchema), register);
 
 /**
  * @swagger

@@ -12,5 +12,7 @@ router
     .post(reportController.createReport);
 
 router.get('/activity/salesperson', reportController.getActivitiesBySalesperson);
+router.get('/activity/summary', reportController.getActivitiesSummary);
+
 
 module.exports = router;

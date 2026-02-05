@@ -1,4 +1,5 @@
 const User = require('../models/User');
+const Company = require('../models/Company');
 const jwt = require('jsonwebtoken');
 const { success } = require('../utils/apiResponse');
 const asyncHandler = require('../middleware/asyncHandler');
@@ -51,36 +52,63 @@ const sendTokenResponse = async (user, statusCode, res, message) => {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 email: user.email,
-                role: user.role
+                role: user.role,
+                onboardingCompleted: user.onboardingCompleted,
+                onboardingStep: user.onboardingStep,
+                company: user.company
             },
             accessToken
         }, message));
 };
 
 /**
- * Register user
+ * Register user (Trial Signup)
  */
 const register = asyncHandler(async (req, res, next) => {
-    const { firstName, lastName, email, password, companyName } = req.body;
+    const { name, email, password, companyName, role: requestedRole } = req.body;
 
     const userExists = await User.findOne({ email });
     if (userExists) {
         return next(new AppError('User already exists', 400));
     }
 
-    // Role is strictly defaulted to SALES_REP for public registrations
-    // Industry standard: Admin assigns roles later
+    // Split name into firstName and lastName
+    let firstName = 'User';
+    let lastName = '';
+    if (name) {
+        const parts = name.trim().split(' ');
+        firstName = parts[0];
+        lastName = parts.slice(1).join(' ') || '';
+    }
+
+    // Default role is SALES_MANAGER for the person who starts the trial (Admin of their org)
+    // requestedRole can be stored as metadata or used if allowed
+    const finalRole = requestedRole || 'SALES_MANAGER';
+
+    // 1. Create User first (temporarily without company)
     const user = await User.create({
         firstName,
         lastName,
         email,
         password,
-        companyName,
-        role: 'SALES_REP',
-        isVerified: true // Auto-verify for easy initial setup/demo
+        role: finalRole,
+        isVerified: true,
+        onboardingCompleted: false,
+        onboardingStep: 1
     });
 
-    res.status(201).json(success(null, 'User registered successfully. An administrator will assign your relevant role.'));
+    // 2. If companyName is provided, create Company and link it
+    if (companyName) {
+        const company = await Company.create({
+            name: companyName,
+            createdBy: user._id
+        });
+        user.company = company._id;
+        await user.save({ validateBeforeSave: false });
+    }
+
+    // 3. Send token and user info
+    await sendTokenResponse(user, 201, res, 'Registration successful. Welcome to your trial!');
 });
 
 /**
@@ -288,7 +316,10 @@ const updateDetails = asyncHandler(async (req, res, next) => {
     const fieldsToUpdate = {
         firstName: req.body.firstName,
         lastName: req.body.lastName,
-        email: req.body.email
+        email: req.body.email,
+        onboardingCompleted: req.body.onboardingCompleted,
+        onboardingStep: req.body.onboardingStep,
+        companyName: req.body.companyName // For profile updates
     };
 
     const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {

@@ -55,6 +55,23 @@ const updateActivityStatus = asyncHandler(async (req, res, next) => {
 });
 
 /**
+ * Update activity (generic for inline edits)
+ */
+const updateActivity = asyncHandler(async (req, res, next) => {
+    const activity = await Activity.findByIdAndUpdate(
+        req.params.id,
+        { ...req.body },
+        { new: true, runValidators: true }
+    );
+
+    if (!activity) {
+        return next(new AppError('Activity not found', 404));
+    }
+
+    res.status(200).json(success(activity, 'Activity updated successfully'));
+});
+
+/**
  * Get all activities for the current user
  */
 const getMyActivities = asyncHandler(async (req, res, next) => {
@@ -69,5 +86,7 @@ module.exports = {
     getActivities,
     logActivity,
     updateActivityStatus,
+    updateActivity,
     getMyActivities
 };
+
