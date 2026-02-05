@@ -158,7 +158,7 @@ const Projects = () => {
                                 </div>
                                 <button
                                     className="view-details-btn"
-                                    onClick={() => navigate(`/projects/${project._id}`)}
+                                    onClick={() => navigate(`/dashboard/projects/${project._id}`)}
                                 >
                                     <span>Details</span>
                                     <ChevronRight size={16} />

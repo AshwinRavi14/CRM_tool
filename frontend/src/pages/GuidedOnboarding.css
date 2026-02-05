@@ -1,0 +1,345 @@
+.onboarding-wizard {
+    min-height: 100vh;
+    background: #f8fafc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 20px;
+    font-family: 'Inter', system-ui, sans-serif;
+}
+
+.wizard-container {
+    background: white;
+    width: 640px;
+    max-width: 100%;
+    border-radius: 16px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05);
+    padding: 48px;
+    display: flex;
+    flex-direction: column;
+}
+
+.wizard-progress {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 40px;
+}
+
+.progress-step {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #e2e8f0;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    font-weight: 700;
+    transition: all 0.3s;
+}
+
+.progress-step.active {
+    background: #0176d3;
+    color: white;
+}
+
+.progress-line {
+    width: 40px;
+    height: 2px;
+    background: #e2e8f0;
+    margin: 0 12px;
+}
+
+.wizard-content {
+    min-height: 340px;
+}
+
+.step-fade-in {
+    animation: fadeIn 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.wizard-content h2 {
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.wizard-content p {
+    font-size: 15px;
+    color: #64748b;
+    margin-bottom: 32px;
+    text-align: center;
+    line-height: 1.5;
+}
+
+.onboarding-form {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.onboarding-form .form-group label {
+    font-size: 14px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 8px;
+    display: block;
+}
+
+.onboarding-form input,
+.onboarding-form select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s;
+    color: #0f172a;
+}
+
+.onboarding-form input:focus {
+    border-color: #0176d3;
+    box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.1);
+}
+
+.option-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+}
+
+.option-btn {
+    padding: 10px;
+    background: white;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 14px;
+    color: #64748b;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.option-btn:hover {
+    border-color: #0176d3;
+    color: #0176d3;
+}
+
+.option-btn.selected {
+    background: #eff6ff;
+    border-color: #0176d3;
+    color: #0176d3;
+    font-weight: 600;
+}
+
+/* Goal Grid Step 2 */
+.goal-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+}
+
+.goal-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 20px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    background: white;
+}
+
+.goal-card:hover {
+    border-color: #0176d3;
+    transform: translateY(-2px);
+}
+
+.goal-card.selected {
+    border-color: #0176d3;
+    background: #eff6ff;
+    box-shadow: 0 4px 12px rgba(1, 118, 211, 0.08);
+}
+
+.goal-icon {
+    color: #64748b;
+    margin-bottom: 12px;
+}
+
+.goal-card.selected .goal-icon {
+    color: #0176d3;
+}
+
+.goal-card h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.goal-card p {
+    font-size: 13px;
+    color: #64748b;
+    text-align: left;
+    margin-bottom: 0;
+}
+
+.selected-icon {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    color: #0176d3;
+    width: 20px;
+    height: 20px;
+}
+
+/* Step 3 Data Setup */
+.data-option-box {
+    margin: 20px 0;
+}
+
+.data-option {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 24px;
+    background: #f1f5f9;
+    border-radius: 12px;
+    border: 2px solid transparent;
+    transition: all 0.2s;
+}
+
+.data-option.active {
+    background: #eff6ff;
+    border-color: #0176d3;
+}
+
+.data-icon-box {
+    width: 56px;
+    height: 56px;
+    background: white;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #0176d3;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+}
+
+.data-text h3 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 4px;
+}
+
+.data-text p {
+    font-size: 13px;
+    color: #64748b;
+    margin-bottom: 0;
+    text-align: left;
+    line-height: 1.4;
+}
+
+.onboarding-checkbox {
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+}
+
+.trust-badge-onboarding {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #94a3b8;
+}
+
+.final-confirmation {
+    margin-top: 32px;
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+}
+
+.conf-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: #10b981;
+    font-weight: 600;
+}
+
+/* Footer */
+.wizard-footer {
+    margin-top: 40px;
+    display: flex;
+    align-items: center;
+}
+
+.btn-back {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: none;
+    border: none;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 8px 16px;
+    border-radius: 8px;
+    transition: background 0.2s;
+}
+
+.btn-back:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.btn-next {
+    padding: 12px 24px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: #0176d3;
+    color: white;
+    border: none;
+}
+
+.btn-primary:hover {
+    background: #015ba1;
+    transform: translateX(2px);
+}
+
+.btn-primary:disabled {
+    background: #cbd5e1;
+    cursor: not-allowed;
+    transform: none;
+}

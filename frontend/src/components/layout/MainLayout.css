@@ -11,16 +11,16 @@
     flex-direction: column;
     width: 100%;
     margin-top: 90px;
-    /* Height of the two-row header (50px + 40px) */
+    background: #FFFFFF;
 }
 
 .page-content-sf {
-    padding: var(--spacing-lg);
     flex: 1;
     width: 100%;
-    max-width: 1600px;
-    /* Optional: Keep content centered on very wide screens */
-    margin: 0 auto;
+    max-width: 100%;
+    /* Don't restrict width for reports */
+    margin: 0;
+    overflow: visible;
 }
 
 /* Transitions */
@@ -31,12 +31,10 @@
 @keyframes fadeIn {
     from {
         opacity: 0;
-        transform: translateY(10px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0);
     }
 }
 

@@ -85,7 +85,8 @@
 .signup-form-sf input,
 .signup-form-sf select {
     width: 100%;
-    padding: 10px 12px 10px 38px;
+    padding: 12px 16px 12px 42px;
+    /* Increased left padding to 42px and vertical to 12px */
     border: 1px solid #dddbda;
     border-radius: 4px;
     font-size: 0.9rem;

@@ -137,9 +137,9 @@ const Contacts = () => {
                                                     style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
                                                     onClick={() => {
                                                         if (contact.account?._id) {
-                                                            navigate(`/accounts/${contact.account._id}`);
+                                                            navigate(`/dashboard/accounts/${contact.account._id}`);
                                                         } else {
-                                                            navigate('/accounts');
+                                                            navigate('/dashboard/accounts');
                                                         }
                                                     }}
                                                 >

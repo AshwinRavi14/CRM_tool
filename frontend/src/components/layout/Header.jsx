@@ -38,16 +38,16 @@ const Header = () => {
     const [activeMenu, setActiveMenu] = useState(null);
 
     const navItems = [
-        { name: 'Home', path: '/', exact: true },
-        { name: 'Leads', path: '/leads' },
-        { name: 'Contacts', path: '/contacts' },
-        { name: 'Accounts', path: '/accounts' },
-        { name: 'Opportunities', path: '/opportunities' },
-        { name: 'Forecasts', path: '/forecasts' },
-        { name: 'Projects', path: '/projects' },
-        { name: 'Reports', path: '/reports' },
-        { name: 'Dashboards', path: '/analytics' },
-        ...(user?.role === 'ADMIN' ? [{ name: 'Users', path: '/users' }] : []),
+        { name: 'Home', path: '/dashboard', exact: true },
+        { name: 'Leads', path: '/dashboard/leads' },
+        { name: 'Contacts', path: '/dashboard/contacts' },
+        { name: 'Accounts', path: '/dashboard/accounts' },
+        { name: 'Opportunities', path: '/dashboard/opportunities' },
+        { name: 'Forecasts', path: '/dashboard/forecasts' },
+        { name: 'Projects', path: '/dashboard/projects' },
+        { name: 'Reports', path: '/dashboard/reports' },
+        { name: 'Dashboards', path: '/dashboard/analytics' },
+        ...(user?.role === 'ADMIN' ? [{ name: 'Users', path: '/dashboard/users' }] : []),
     ];
 
     useEffect(() => {
@@ -102,7 +102,7 @@ const Header = () => {
             {/* Top Row: Logo, Search, Utilities */}
             <div className="header-top-row">
                 <div className="header-left-sf">
-                    <div className="logo-sf" onClick={() => navigate('/')}>
+                    <div className="logo-sf" onClick={() => navigate('/dashboard')}>
                         <Cloud size={32} color="#0176d3" fill="#0176d3" />
                     </div>
                     <div className="app-launcher">
@@ -130,7 +130,7 @@ const Header = () => {
                                                 <div
                                                     key={item._id}
                                                     className="search-result-item-sf"
-                                                    onClick={() => navigate(`${type === 'opportunities' ? '/opportunities/' : '/' + type + '/'}${item._id}`)}
+                                                    onClick={() => navigate(`${type === 'opportunities' ? '/dashboard/opportunities/' : '/dashboard/' + type + '/'}${item._id}`)}
                                                 >
                                                     {item.firstName ? `${item.firstName} ${item.lastName}` : (item.companyName || item.name)}
                                                 </div>

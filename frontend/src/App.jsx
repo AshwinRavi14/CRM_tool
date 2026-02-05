@@ -16,11 +16,12 @@ import Settings from './pages/Settings';
 import UserManagement from './pages/UserManagement';
 import Forecasts from './pages/Forecasts';
 import ActivitiesReport from './pages/ActivitiesReport';
+import LandingPage from './pages/LandingPage';
 import './styles/tokens.css';
-import { AuthProvider } from './context/AuthContext';
-import { ToastProvider } from './context/ToastContext';
 import Login from './pages/Login';
 import Onboarding from './pages/Onboarding';
+import Signup from './pages/Signup';
+import GuidedOnboarding from './pages/GuidedOnboarding';
 
 
 // Placeholder Pages for future implementation
@@ -33,42 +34,43 @@ const Placeholder = ({ name }) => (
 
 function App() {
   return (
-    <AuthProvider>
-      <ToastProvider>
-        <BrowserRouter>
-          <Routes>
-            {/* Main Application Routes - Protected by AuthContext in MainLayout */}
-            <Route path="/" element={<MainLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="leads" element={<Leads />} />
-              <Route path="contacts" element={<Contacts />} />
-              <Route path="accounts" element={<Accounts />} />
-              <Route path="accounts/:id" element={<AccountDetails />} />
-              <Route path="opportunities" element={<Opportunities />} />
-              <Route path="projects" element={<Projects />} />
-              <Route path="projects/:id" element={<ProjectDetails />} />
-              <Route path="reports" element={<Reports />}>
-                <Route index element={<Navigate to="sales" replace />} />
-                <Route path="activity/salesperson" element={<ActivitiesReport />} />
-                <Route path=":category" element={<ReportList />} />
-              </Route>
-              <Route path="analytics" element={<Analytics />} />
-              <Route path="settings" element={<Settings />} />
-              <Route path="users" element={<UserManagement />} />
-              <Route path="forecasts" element={<Forecasts />} />
-            </Route>
+    <BrowserRouter>
+      <Routes>
+        {/* Public Landing Page */}
+        <Route path="/" element={<LandingPage />} />
 
-            {/* Auth Routes */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/onboarding/:token" element={<Onboarding />} />
+        {/* Main Application Routes - Protected by AuthContext in MainLayout */}
+        <Route path="/dashboard" element={<MainLayout />}>
+          <Route index element={<Dashboard />} />
+          <Route path="leads" element={<Leads />} />
+          <Route path="contacts" element={<Contacts />} />
+          <Route path="accounts" element={<Accounts />} />
+          <Route path="accounts/:id" element={<AccountDetails />} />
+          <Route path="opportunities" element={<Opportunities />} />
+          <Route path="projects" element={<Projects />} />
+          <Route path="projects/:id" element={<ProjectDetails />} />
+          <Route path="reports" element={<Reports />}>
+            <Route index element={<Navigate to="sales" replace />} />
+            <Route path="activity/salesperson" element={<ActivitiesReport />} />
+            <Route path=":category" element={<ReportList />} />
+          </Route>
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="settings" element={<Settings />} />
+          <Route path="users" element={<UserManagement />} />
+          <Route path="forecasts" element={<Forecasts />} />
+        </Route>
+
+        {/* Auth Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/onboarding/:token" element={<Onboarding />} />
+        <Route path="/guided-onboarding" element={<GuidedOnboarding />} />
 
 
-            {/* 404 Redirect */}
-            <Route path="*" element={<Navigate to="/" />} />
-          </Routes>
-        </BrowserRouter>
-      </ToastProvider>
-    </AuthProvider>
+        {/* 404 Redirect */}
+        <Route path="*" element={<Navigate to="/" />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

@@ -26,7 +26,7 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     if (user) {
-        return <Navigate to="/" replace />;
+        return <Navigate to="/dashboard" replace />;
     }
 
     const handleSubmit = async (e) => {
@@ -40,7 +40,7 @@ const Login = () => {
         try {
             await login(email, password);
             toastSuccess('Welcome back!');
-            navigate('/');
+            navigate('/dashboard');
         } catch (err) {
             console.error('Login error:', err);
             toastError(err.message || 'Invalid credentials');
@@ -54,13 +54,13 @@ const Login = () => {
             {/* Header Logo */}
             <div className="signup-logo-container">
                 <Square size={28} fill="#0176d3" color="#0176d3" />
-                <span className="brand-text">CRM Suite</span>
+                <span className="brand-text">WERSEL-CRM</span>
             </div>
 
             <div className="signup-main-container">
                 {/* Left Pane: Form */}
                 <div className="signup-form-pane">
-                    <h1>Sign in to CRM Suite</h1>
+                    <h1>Sign in to WERSEL-CRM</h1>
                     <p className="subtitle">Enter your credentials to access your customer relationship platform.</p>
 
                     <form className="signup-form-sf" onSubmit={handleSubmit}>
@@ -100,7 +100,7 @@ const Login = () => {
                         </button>
 
                         <div className="login-link-container">
-                            New to CRM Suite? <Link to="/signup">Create an account</Link>
+                            New to WERSEL-CRM? <Link to="/signup">Create an account</Link>
                         </div>
 
                         <div className="social-signup-divider">
@@ -175,7 +175,7 @@ const Login = () => {
             </div>
 
             <footer className="signup-page-footer">
-                <span>© 2026 CRM Suite. All rights reserved.</span>
+                <span>© 2026 WERSEL-CRM. All rights reserved.</span>
                 <a href="#">Terms of Service</a>
                 <a href="#">Privacy Policy</a>
                 <a href="#">Support</a>

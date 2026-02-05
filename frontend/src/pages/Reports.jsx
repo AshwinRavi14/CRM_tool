@@ -41,31 +41,31 @@ const Reports = () => {
                     <h3>Categories</h3>
                     <ul className="category-list">
                         <li>
-                            <NavLink to="/reports/sales" className={({ isActive }) => isActive ? 'active' : ''}>
+                            <NavLink to="/dashboard/reports/sales" className={({ isActive }) => isActive ? 'active' : ''}>
                                 <BarChart size={18} />
                                 <span>Sales Reports</span>
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink to="/reports/marketing" className={({ isActive }) => isActive ? 'active' : ''}>
+                            <NavLink to="/dashboard/reports/marketing" className={({ isActive }) => isActive ? 'active' : ''}>
                                 <PieChart size={18} />
                                 <span>Marketing</span>
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink to="/reports/inventory" className={({ isActive }) => isActive ? 'active' : ''}>
+                            <NavLink to="/dashboard/reports/inventory" className={({ isActive }) => isActive ? 'active' : ''}>
                                 <Package size={18} />
                                 <span>Inventory</span>
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink to="/reports/activity" className={({ isActive }) => isActive ? 'active' : ''}>
+                            <NavLink to="/dashboard/reports/activity" className={({ isActive }) => isActive ? 'active' : ''}>
                                 <Activity size={18} />
                                 <span>Activity</span>
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink to="/reports/user-performance" className={({ isActive }) => isActive ? 'active' : ''}>
+                            <NavLink to="/dashboard/reports/user-performance" className={({ isActive }) => isActive ? 'active' : ''}>
                                 <Users size={18} />
                                 <span>User Performance</span>
                             </NavLink>

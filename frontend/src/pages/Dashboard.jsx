@@ -210,7 +210,7 @@ const Dashboard = () => {
                                                     {lead.source || 'WEB'}
                                                 </span>
                                             </td>
-                                            <td className="text-primary-link" onClick={() => navigate('/leads')}>
+                                            <td className="text-primary-link" onClick={() => navigate('/dashboard/leads')}>
                                                 {lead.firstName} {lead.lastName}
                                             </td>
                                         </tr>

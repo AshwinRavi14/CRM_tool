@@ -15,13 +15,32 @@ export const AuthProvider = ({ children }) => {
         return user;
     };
 
+    const signup = async (signupData) => {
+        const response = await apiClient.post('/auth/register', signupData);
+        const { user, accessToken } = response.data;
+        sessionStorage.setItem('crm_access_token', accessToken);
+        setUser(user);
+        return user;
+    };
+
+    const completeOnboarding = async (data) => {
+        // This will be implemented when we have the onboarding steps
+        // For now, let's assume it updates the user status
+        const response = await apiClient.put('/auth/details', {
+            ...data,
+            onboardingCompleted: true
+        });
+        setUser(response.data);
+        return response.data;
+    };
+
     const logout = async () => {
         try {
             await apiClient.post('/auth/logout');
         } finally {
             sessionStorage.removeItem('crm_access_token');
             setUser(null);
-            window.location.href = '/login';
+            window.location.href = '/';
         }
     };
 
@@ -45,13 +64,26 @@ export const AuthProvider = ({ children }) => {
     };
 
     useEffect(() => {
+        // Skip auth check on public pages to avoid 401 errors
+        const publicPaths = ['/', '/login', '/signup', '/onboarding'];
+        const isPublicPage = publicPaths.some(path =>
+            window.location.pathname === path || window.location.pathname.startsWith('/onboarding/')
+        );
+
+        if (isPublicPage && !sessionStorage.getItem('crm_access_token')) {
+            setLoading(false);
+            return;
+        }
+
         checkAuthStatus();
     }, []);
 
     const value = {
         user,
         login,
+        signup,
         logout,
+        completeOnboarding,
         loading
     };
 
