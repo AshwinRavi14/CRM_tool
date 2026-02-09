@@ -9,8 +9,13 @@ const LandingPage = () => {
     const navigate = useNavigate();
     const [selectedPlan, setSelectedPlan] = useState('Professional');
 
+    // Redirect logged-in users based on their onboarding status
     if (user && !loading) {
-        return <Navigate to="/dashboard" replace />;
+        if (user.onboardingCompleted) {
+            return <Navigate to="/dashboard" replace />;
+        } else {
+            return <Navigate to="/onboarding" replace />;
+        }
     }
 
     const features = [

@@ -24,12 +24,11 @@ const userSchema = new mongoose.Schema({
     },
     lastName: {
         type: String,
-        required: [true, 'Last name is required'],
         trim: true
     },
     role: {
         type: String,
-        enum: ['ADMIN', 'SALES_MANAGER', 'SALES_REP', 'ACCOUNT_MANAGER', 'PROJECT_MANAGER', 'SUPPORT_STAFF'],
+        enum: ['ADMIN', 'SALES_MANAGER', 'SALES_REP', 'ACCOUNT_MANAGER', 'PROJECT_MANAGER', 'SUPPORT_STAFF', 'FOUNDER', 'OTHER'],
         default: 'SALES_REP'
     },
     status: {
@@ -69,7 +68,34 @@ const userSchema = new mongoose.Schema({
     onboardingStep: {
         type: Number,
         default: 1
-    }
+    },
+    primaryGoals: [String],
+    onboardingChecklist: {
+        type: Map,
+        of: Boolean,
+        default: {}
+    },
+    showSampleData: {
+        type: Boolean,
+        default: false
+    },
+    showRoleTips: {
+        type: Boolean,
+        default: true
+    },
+    isFirstLogin: {
+        type: Boolean,
+        default: true
+    },
+    trialStartDate: {
+        type: Date,
+        default: Date.now
+    },
+    trialEndsAt: {
+        type: Date,
+        default: () => new Date(+new Date() + 14 * 24 * 60 * 60 * 1000)
+    },
+    verificationExpire: Date
 }, {
     timestamps: true
 });
@@ -116,6 +142,9 @@ userSchema.methods.getVerificationToken = function () {
         .createHash('sha256')
         .update(verificationToken)
         .digest('hex');
+
+    // Set expire
+    this.verificationExpire = Date.now() + 24 * 60 * 60 * 1000; // 24 hours
 
     return verificationToken;
 };

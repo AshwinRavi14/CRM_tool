@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
@@ -9,18 +9,17 @@ import {
     User,
     Building2,
     Briefcase,
-    Chrome,
-    Cloud,
     ShieldCheck,
     ChevronRight,
     Rocket
 } from 'lucide-react';
+import { GoogleLogo, MicrosoftTeamsLogo } from '../components/common/BrandLogos';
 import './Signup.css';
 
 const Signup = () => {
     const { signup, user } = useAuth();
     const navigate = useNavigate();
-    const { toastSuccess, toastError } = useToast();
+    const { success: toastSuccess, error: toastError } = useToast();
 
     const [formData, setFormData] = useState({
         name: '',
@@ -29,21 +28,40 @@ const Signup = () => {
         companyName: '',
         role: ''
     });
+    const [passwordStrength, setPasswordStrength] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
 
-    // If user is already logged in, redirect to dashboard or onboarding
-    React.useEffect(() => {
+    const calculateStrength = (password) => {
+        let score = 0;
+        if (!password) return 0;
+        if (password.length > 6) score++;
+        if (/[A-Z]/.test(password)) score++;
+        if (/[0-9]/.test(password)) score++;
+        if (/[^A-Za-z0-9]/.test(password)) score++;
+        return score;
+    };
+
+    useEffect(() => {
         if (user) {
+            // If user just signed up (unverified), don't redirect - let handleSubmit do it
+            if (!user.isVerified) {
+                return; // Let the explicit navigate('/verify-email') in handleSubmit take effect
+            }
+            // For verified users returning to signup page, redirect them appropriately
             if (user.onboardingCompleted) {
                 navigate('/dashboard');
             } else {
-                navigate('/guided-onboarding');
+                navigate('/onboarding');
             }
         }
     }, [user, navigate]);
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        const { name, value } = e.target;
+        setFormData({ ...formData, [name]: value });
+        if (name === 'password') {
+            setPasswordStrength(calculateStrength(value));
+        }
     };
 
     const handleSubmit = async (e) => {
@@ -52,16 +70,18 @@ const Signup = () => {
 
         try {
             const newUser = await signup(formData);
-            toastSuccess('Account created! Let\'s set up your workspace.');
-
-            if (newUser.onboardingCompleted) {
-                navigate('/dashboard');
-            } else {
-                navigate('/guided-onboarding');
-            }
+            toastSuccess('Account created! Please verify your email to continue.');
+            navigate('/verify-email', { state: { email: formData.email } });
         } catch (err) {
             console.error('Signup error:', err);
-            toastError(err.message || 'Failed to create account');
+            const responseData = err.response?.data;
+            let errorMessage = responseData?.message || err.message || 'Failed to create account';
+
+            if (responseData?.errors && Array.isArray(responseData.errors)) {
+                errorMessage = `${errorMessage}: ${responseData.errors.join(', ')}`;
+            }
+
+            toastError(errorMessage);
         } finally {
             setIsLoading(false);
         }
@@ -83,11 +103,11 @@ const Signup = () => {
                 <div className="signup-scroll-area">
                     <div className="social-signup-options">
                         <button className="social-btn" type="button">
-                            <Chrome size={20} />
+                            <GoogleLogo />
                             <span>Sign up with Google</span>
                         </button>
                         <button className="social-btn" type="button">
-                            <Cloud size={20} />
+                            <MicrosoftTeamsLogo />
                             <span>Sign up with Microsoft Teams</span>
                         </button>
                         <button className="social-btn" type="button">
@@ -144,7 +164,7 @@ const Signup = () => {
                                     required
                                 />
                             </div>
-                            <div className="password-strength">
+                            <div className={`password-strength level-${passwordStrength}`}>
                                 <div className="strength-bar"></div>
                                 <div className="strength-bar"></div>
                                 <div className="strength-bar"></div>

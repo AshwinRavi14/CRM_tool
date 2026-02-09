@@ -1,0 +1,167 @@
+.verify-email-container {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8fafc;
+    padding: var(--spacing-lg);
+}
+
+.verify-email-card {
+    background: white;
+    width: 100%;
+    max-width: 440px;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+    padding: var(--spacing-xl);
+    text-align: center;
+}
+
+.mail-icon-circle {
+    width: 64px;
+    height: 64px;
+    background-color: #eff6ff;
+    color: var(--primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto var(--spacing-lg);
+}
+
+.verify-card-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: var(--spacing-md);
+}
+
+.verify-card-body .invite-text {
+    font-size: 15px;
+    color: #475569;
+    line-height: 1.6;
+    margin-bottom: var(--spacing-xl);
+}
+
+.verify-card-body strong {
+    color: #1e293b;
+}
+
+.verify-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-md);
+    margin-bottom: var(--spacing-xl);
+}
+
+.btn-continue-product {
+    background-color: var(--primary);
+    color: white;
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 15px;
+    transition: background-color 0.2s;
+}
+
+.btn-continue-product:hover {
+    background-color: var(--primary-hover);
+}
+
+.btn-resend-email {
+    background: white;
+    color: #475569;
+    width: 100%;
+    padding: 12px;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    font-weight: 600;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-resend-email:hover {
+    background-color: #f8fafc;
+    border-color: #cbd5e1;
+}
+
+.btn-resend-email:disabled {
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.spin {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.verify-card-footer {
+    border-top: 1px solid #f1f5f9;
+    padding-top: var(--spacing-lg);
+}
+
+.trial-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: var(--spacing-sm);
+}
+
+.trial-row {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+}
+
+.trial-row:last-child {
+    text-align: right;
+}
+
+.verify-card-footer .label {
+    font-size: 12px;
+    color: #64748b;
+    margin-bottom: 2px;
+}
+
+.verify-card-footer .value {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: var(--spacing-md);
+    background-color: #f8fafc;
+    padding: 8px 12px;
+    border-radius: 6px;
+}
+
+.help-link {
+    margin-top: var(--spacing-lg);
+}
+
+.help-link a {
+    font-size: 13px;
+    color: var(--primary);
+    font-weight: 500;
+}
+
+.help-link a:hover {
+    text-decoration: underline;
+}

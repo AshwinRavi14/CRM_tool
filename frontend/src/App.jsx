@@ -22,6 +22,9 @@ import Login from './pages/Login';
 import Onboarding from './pages/Onboarding';
 import Signup from './pages/Signup';
 import GuidedOnboarding from './pages/GuidedOnboarding';
+import OnboardingDashboard from './pages/OnboardingDashboard';
+import VerifyEmail from './pages/VerifyEmail';
+import OnboardingGuard from './components/guards/OnboardingGuard';
 
 
 // Placeholder Pages for future implementation
@@ -58,13 +61,22 @@ function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="users" element={<UserManagement />} />
           <Route path="forecasts" element={<Forecasts />} />
+          <Route path="onboarding" element={<OnboardingDashboard />} />
         </Route>
 
         {/* Auth Routes */}
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/onboarding/:token" element={<Onboarding />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/guided-onboarding" element={<GuidedOnboarding />} />
+
+        {/* Protected Onboarding Route - Only for new users */}
+        <Route path="/onboarding" element={
+          <OnboardingGuard>
+            <OnboardingDashboard />
+          </OnboardingGuard>
+        } />
 
 
         {/* 404 Redirect */}

@@ -12,21 +12,23 @@ import {
     BarChart3,
     Calendar,
     MessageSquare,
-    CheckCircle2
+    CheckCircle2,
+    ShieldCheck,
+    Rocket
 } from 'lucide-react';
 import './GuidedOnboarding.css';
 
 const GuidedOnboarding = () => {
     const { user, completeOnboarding } = useAuth();
     const navigate = useNavigate();
-    const { toastSuccess, toastError } = useToast();
+    const { success: toastSuccess, error: toastError } = useToast();
 
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         companyName: user?.companyName || '',
         role: user?.role || '',
         teamSize: '',
-        primaryGoal: '',
+        primaryGoals: [],
         seedDemoData: true
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,7 +45,15 @@ const GuidedOnboarding = () => {
     };
 
     const handleSelectOption = (name, value) => {
-        setFormData({ ...formData, [name]: value });
+        if (name === 'primaryGoals') {
+            const currentGoals = formData.primaryGoals || [];
+            const newGoals = currentGoals.includes(value)
+                ? currentGoals.filter(g => g !== value)
+                : [...currentGoals, value];
+            setFormData({ ...formData, primaryGoals: newGoals });
+        } else {
+            setFormData({ ...formData, [name]: value });
+        }
     };
 
     const handleSubmit = async () => {
@@ -131,13 +141,13 @@ const GuidedOnboarding = () => {
                                 ].map(goal => (
                                     <div
                                         key={goal.id}
-                                        className={`goal-card ${formData.primaryGoal === goal.id ? 'selected' : ''}`}
-                                        onClick={() => handleSelectOption('primaryGoal', goal.id)}
+                                        className={`goal-card ${(formData.primaryGoals || []).includes(goal.id) ? 'selected' : ''}`}
+                                        onClick={() => handleSelectOption('primaryGoals', goal.id)}
                                     >
                                         <goal.icon size={24} className="goal-icon" />
                                         <h3>{goal.title}</h3>
                                         <p>{goal.desc}</p>
-                                        {formData.primaryGoal === goal.id && <CheckCircle2 className="selected-icon" />}
+                                        {(formData.primaryGoals || []).includes(goal.id) && <CheckCircle2 className="selected-icon" />}
                                     </div>
                                 ))}
                             </div>

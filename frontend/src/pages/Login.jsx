@@ -26,7 +26,11 @@ const Login = () => {
     const [isLoading, setIsLoading] = useState(false);
 
     if (user) {
-        return <Navigate to="/dashboard" replace />;
+        if (user.onboardingCompleted) {
+            return <Navigate to="/dashboard" replace />;
+        } else {
+            return <Navigate to="/onboarding" replace />;
+        }
     }
 
     const handleSubmit = async (e) => {
@@ -38,9 +42,14 @@ const Login = () => {
 
         setIsLoading(true);
         try {
-            await login(email, password);
+            const user = await login(email, password);
             toastSuccess('Welcome back!');
-            navigate('/dashboard');
+
+            if (user.onboardingCompleted) {
+                navigate('/dashboard');
+            } else {
+                navigate('/onboarding');
+            }
         } catch (err) {
             console.error('Login error:', err);
             toastError(err.message || 'Invalid credentials');

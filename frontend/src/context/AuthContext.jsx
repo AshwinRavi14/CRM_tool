@@ -28,7 +28,8 @@ export const AuthProvider = ({ children }) => {
         // For now, let's assume it updates the user status
         const response = await apiClient.put('/auth/details', {
             ...data,
-            onboardingCompleted: true
+            onboardingCompleted: true,
+            isFirstLogin: false
         });
         setUser(response.data);
         return response.data;
@@ -78,12 +79,26 @@ export const AuthProvider = ({ children }) => {
         checkAuthStatus();
     }, []);
 
+    const verifyEmail = async (token) => {
+        const response = await apiClient.get(`/auth/verify-email/${token}`);
+        const { user, accessToken } = response.data;
+        sessionStorage.setItem('crm_access_token', accessToken);
+        setUser(user);
+        return user;
+    };
+
+    const resendVerification = async (email) => {
+        await apiClient.post('/auth/resend-verification', { email });
+    };
+
     const value = {
         user,
         login,
         signup,
         logout,
         completeOnboarding,
+        verifyEmail,
+        resendVerification,
         loading
     };
 

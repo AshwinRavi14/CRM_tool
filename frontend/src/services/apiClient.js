@@ -31,7 +31,11 @@ apiClient.interceptors.request.use(
             config.headers.Authorization = `Bearer ${token}`;
             console.log('Sending token for URL:', config.url);
         } else {
-            console.warn('NO TOKEN in sessionStorage for URL:', config.url);
+            const publicRoutes = ['/auth/login', 'auth/register'];
+            const isPublicRoute = publicRoutes.some(route => config.url.includes(route));
+            if (!isPublicRoute) {
+                console.warn('apiClient: NO TOKEN in sessionStorage for URL:', config.url);
+            }
         }
         return config;
     },

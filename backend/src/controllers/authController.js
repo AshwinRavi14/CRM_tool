@@ -85,19 +85,30 @@ const register = asyncHandler(async (req, res, next) => {
     // requestedRole can be stored as metadata or used if allowed
     const finalRole = requestedRole || 'SALES_MANAGER';
 
-    // 1. Create User first (temporarily without company)
+    // 1. Create User first (initial state: unverified, first login)
     const user = await User.create({
         firstName,
         lastName,
         email,
         password,
         role: finalRole,
-        isVerified: true,
+        isVerified: false,
         onboardingCompleted: false,
-        onboardingStep: 1
+        onboardingStep: 1,
+        isFirstLogin: true,
+        trialStartDate: Date.now(),
+        trialEndsAt: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000)
     });
 
-    // 2. If companyName is provided, create Company and link it
+    // 2. Generate Verification Token
+    const verificationToken = user.getVerificationToken();
+    await user.save({ validateBeforeSave: false });
+
+    // 3. (Mock) Send verification email
+    const verificationUrl = `${req.protocol}://${req.get('host')}/api/auth/verify-email/${verificationToken}`;
+    logger.info(`Verification URL: ${verificationUrl}`);
+
+    // 4. If companyName is provided, create Company and link it
     if (companyName) {
         const company = await Company.create({
             name: companyName,
@@ -107,8 +118,8 @@ const register = asyncHandler(async (req, res, next) => {
         await user.save({ validateBeforeSave: false });
     }
 
-    // 3. Send token and user info
-    await sendTokenResponse(user, 201, res, 'Registration successful. Welcome to your trial!');
+    // 5. Send token and user info (Returning 201 Created)
+    await sendTokenResponse(user, 201, res, 'Registration successful. Please verify your email.');
 });
 
 /**
@@ -133,6 +144,57 @@ const login = asyncHandler(async (req, res, next) => {
     }
 
     await sendTokenResponse(user, 200, res, 'Login successful');
+});
+
+/**
+ * Verify Email
+ */
+const verifyEmail = asyncHandler(async (req, res, next) => {
+    const verificationToken = crypto
+        .createHash('sha256')
+        .update(req.params.token)
+        .digest('hex');
+
+    const user = await User.findOne({
+        verificationToken,
+        verificationExpire: { $gt: Date.now() }
+    });
+
+    if (!user) {
+        return next(new AppError('Invalid or expired verification token', 400));
+    }
+
+    user.isVerified = true;
+    user.verificationToken = undefined;
+    user.verificationExpire = undefined;
+    await user.save({ validateBeforeSave: false });
+
+    sendTokenResponse(user, 200, res, 'Email verified successfully');
+});
+
+/**
+ * Resend Verification Email
+ */
+const resendVerification = asyncHandler(async (req, res, next) => {
+    const user = await User.findById(req.user.id);
+
+    if (!user) {
+        return next(new AppError('User not found', 404));
+    }
+
+    if (user.isVerified) {
+        return next(new AppError('User is already verified', 400));
+    }
+
+    const verificationToken = user.getVerificationToken();
+    await user.save({ validateBeforeSave: false });
+
+    const verificationUrl = `${req.protocol}://${req.get('host')}/api/auth/verify-email/${verificationToken}`;
+    logger.info(`Resent Verification URL: ${verificationUrl}`);
+
+    // In a real app: await sendEmail({ email: user.email, subject: 'Wersel CRM - Verify your email', message: `Please verify: ${verificationUrl}` });
+
+    res.status(200).json(success(null, 'Verification email sent'));
 });
 
 /**
@@ -187,67 +249,6 @@ const logout = asyncHandler(async (req, res, next) => {
 const getMe = asyncHandler(async (req, res, next) => {
     const user = await User.findById(req.user.id);
     res.status(200).json(success(user));
-});
-
-/**
- * Verify Email
- */
-const verifyEmail = asyncHandler(async (req, res, next) => {
-    const verificationToken = crypto
-        .createHash('sha256')
-        .update(req.params.token)
-        .digest('hex');
-
-    const user = await User.findOne({
-        verificationToken,
-        isVerified: false
-    });
-
-    if (!user) {
-        return next(new AppError('Invalid or expired token', 400));
-    }
-
-    user.isVerified = true;
-    user.verificationToken = undefined;
-    await user.save();
-
-    await sendTokenResponse(user, 200, res, 'Email verified successfully');
-});
-
-/**
- * Resend Verification Email
- */
-const resendVerification = asyncHandler(async (req, res, next) => {
-    const { email } = req.body;
-    const user = await User.findOne({ email });
-
-    if (!user) {
-        return next(new AppError('User not found', 404));
-    }
-
-    if (user.isVerified) {
-        return next(new AppError('Email already verified', 400));
-    }
-
-    const verificationToken = user.getVerificationToken();
-    await user.save({ validateBeforeSave: false });
-
-    const verifyUrl = `${req.protocol}://${req.get('host')}/api/v1/auth/verify-email/${verificationToken}`;
-    const message = `Please verify your email via this link:\n\n${verifyUrl}`;
-
-    try {
-        await sendEmail({
-            email: user.email,
-            subject: 'Wersel CRM - Verify your email',
-            message
-        });
-
-        res.status(200).json(success(null, 'Verification email sent'));
-    } catch (err) {
-        user.verificationToken = undefined;
-        await user.save({ validateBeforeSave: false });
-        return next(new AppError('Email could not be sent', 500));
-    }
 });
 
 /**
@@ -319,7 +320,12 @@ const updateDetails = asyncHandler(async (req, res, next) => {
         email: req.body.email,
         onboardingCompleted: req.body.onboardingCompleted,
         onboardingStep: req.body.onboardingStep,
-        companyName: req.body.companyName // For profile updates
+        isFirstLogin: req.body.isFirstLogin,
+        companyName: req.body.companyName, // For profile updates
+        primaryGoals: req.body.primaryGoals,
+        onboardingChecklist: req.body.onboardingChecklist,
+        showSampleData: req.body.showSampleData,
+        showRoleTips: req.body.showRoleTips
     };
 
     const user = await User.findByIdAndUpdate(req.user.id, fieldsToUpdate, {
