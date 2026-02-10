@@ -1,0 +1,267 @@
+.billing-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease;
+}
+
+.billing-modal-content {
+    background: #ffffff;
+    width: 100%;
+    max-width: 480px;
+    border-radius: 12px;
+    padding: 32px;
+    position: relative;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    color: #1a1a1a;
+    animation: slideUp 0.3s ease;
+}
+
+.close-btn-top {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    background: transparent;
+    border: none;
+    color: #707070;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.close-btn-top:hover {
+    color: #000;
+}
+
+.billing-modal-header h2 {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    color: #1a1a1a;
+}
+
+.billing-modal-header p {
+    font-size: 14px;
+    color: #6a6a6a;
+    line-height: 1.5;
+    margin-bottom: 24px;
+}
+
+.billing-form {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-group-full,
+.form-group-half {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.form-row-billing {
+    display: flex;
+    gap: 16px;
+}
+
+.form-row-billing>.form-group-half {
+    flex: 1;
+}
+
+.billing-form label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #444;
+}
+
+.billing-form input,
+.billing-form select {
+    padding: 12px 16px;
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 15px;
+    background: #fafafa;
+    transition: all 0.2s ease;
+}
+
+.billing-form input:focus,
+.billing-form select:focus {
+    outline: none;
+    border-color: #0176d3;
+    background: #fff;
+    box-shadow: 0 0 0 3px rgba(1, 118, 211, 0.1);
+}
+
+.select-wrapper-billing {
+    position: relative;
+}
+
+.select-wrapper-billing select {
+    width: 100%;
+    appearance: none;
+    cursor: pointer;
+}
+
+.select-icon-billing {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #707070;
+    pointer-events: none;
+}
+
+.agreement-checkbox {
+    margin-top: 8px;
+}
+
+.checkbox-container-billing {
+    display: flex;
+    gap: 12px;
+    cursor: pointer;
+    user-select: none;
+}
+
+.checkbox-container-billing input {
+    display: none;
+}
+
+.checkmark-billing {
+    width: 20px;
+    height: 20px;
+    border: 1px solid #d0d0d0;
+    border-radius: 4px;
+    flex-shrink: 0;
+    position: relative;
+    transition: all 0.2s;
+    background: #fff;
+}
+
+.checkbox-container-billing input:checked~.checkmark-billing {
+    background: #0176d3;
+    border-color: #0176d3;
+}
+
+.checkmark-billing:after {
+    content: "";
+    position: absolute;
+    display: none;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+}
+
+.checkbox-container-billing input:checked~.checkmark-billing:after {
+    display: block;
+}
+
+.checkbox-text-billing strong {
+    font-size: 14px;
+    display: block;
+    margin-bottom: 4px;
+    color: #1a1a1a;
+}
+
+.checkbox-text-billing p {
+    font-size: 12px;
+    color: #707070;
+    line-height: 1.4;
+}
+
+.billing-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.btn-skip-billing {
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    color: #444;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-skip-billing:hover {
+    background: #f5f5f5;
+    border-color: #d0d0d0;
+}
+
+.btn-save-billing {
+    padding: 12px 24px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    background: #0176d3;
+    border: none;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-save-billing:hover {
+    background: #015ba1;
+}
+
+.btn-save-billing:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+}
+
+.pci-compliance-footer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 24px;
+    font-size: 12px;
+    color: #707070;
+}
+
+.pci-compliance-footer a {
+    color: #0176d3;
+    text-decoration: none;
+}
+
+.pci-compliance-footer a:hover {
+    text-decoration: underline;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

@@ -1,0 +1,135 @@
+.insights-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.insights-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+}
+
+.insights-header .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.report-icon {
+    background: linear-gradient(135deg, var(--primary), #b199ff);
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 16px rgba(1, 118, 211, 0.3);
+}
+
+.insights-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.insights-header p {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.header-right {
+    display: flex;
+    gap: 12px;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 20px;
+}
+
+.stat-icon {
+    width: 24px;
+    height: 24px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    border-radius: 12px;
+}
+
+.stat-card .label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+}
+
+.stat-card .value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.stat-card .trend {
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.trend.pos {
+    color: #10b981;
+}
+
+.trend.neg {
+    color: #ef4444;
+}
+
+.charts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.chart-card {
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.chart-card.span-2 {
+    grid-column: span 2;
+}
+
+.chart-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chart-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 700;
+}
+
+.chart-body {
+    flex: 1;
+    min-height: 300px;
+}
+
+.loading-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 400px;
+}

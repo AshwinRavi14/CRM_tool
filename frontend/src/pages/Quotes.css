@@ -1,0 +1,254 @@
+.quotes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.quotes-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 24px;
+    flex-wrap: wrap;
+    gap: 16px;
+}
+
+.quotes-header .header-info h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.quotes-header .header-info p {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    margin: 4px 0 0;
+}
+
+.quotes-header .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.quotes-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    min-width: 220px;
+}
+
+.quotes-search input {
+    border: none;
+    background: transparent;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    outline: none;
+    width: 100%;
+}
+
+.status-filter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    position: relative;
+}
+
+.status-filter select {
+    background: transparent;
+    border: none;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    outline: none;
+    cursor: pointer;
+    appearance: none;
+    padding-right: 18px;
+}
+
+.status-filter .select-arrow {
+    position: absolute;
+    right: 10px;
+    pointer-events: none;
+    color: var(--text-secondary);
+}
+
+.create-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.create-btn:hover {
+    background: var(--primary-dark, #005bb5);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(1, 118, 211, 0.3);
+}
+
+/* Table */
+.quotes-table-wrapper {
+    padding: 0;
+    overflow: hidden;
+}
+
+.quotes-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.quotes-table thead {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.quotes-table th {
+    text-align: left;
+    padding: 14px 16px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.quotes-table td {
+    padding: 14px 16px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.quotes-table tbody tr {
+    transition: background 0.15s;
+}
+
+.quotes-table tbody tr:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.quote-number {
+    font-weight: 600;
+    color: var(--primary) !important;
+}
+
+.amount {
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+}
+
+.status-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--status-color);
+    background: color-mix(in srgb, var(--status-color) 12%, transparent);
+}
+
+/* Actions */
+.actions-cell {
+    position: relative;
+    text-align: right;
+}
+
+.action-trigger {
+    background: none;
+    border: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.15s;
+}
+
+.action-trigger:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.action-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    min-width: 160px;
+    padding: 6px 0;
+    z-index: 100;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    font-size: 0.82rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    transition: background 0.12s;
+}
+
+.action-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.action-item.success {
+    color: #10b981;
+}
+
+.action-item.danger {
+    color: #ef4444;
+}
+
+/* Empty & Loading */
+.empty-state,
+.loading-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 60px 20px;
+    color: var(--text-secondary);
+    gap: 12px;
+}
+
+.empty-state h3 {
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.empty-state p {
+    margin: 0 0 8px;
+}
+
+.loading-state .spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(255, 255, 255, 0.1);
+    border-top-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}

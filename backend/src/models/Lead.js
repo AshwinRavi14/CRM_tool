@@ -27,18 +27,27 @@ const leadSchema = new mongoose.Schema({
     company: String,
     source: {
         type: String,
-        enum: ['WEBSITE', 'REFERRAL', 'LINKEDIN', 'CONFERENCE', 'COLD_CALL', 'EMAIL', 'OTHER'],
-        required: true
+        enum: ['WEBSITE', 'REFERRAL', 'LINKEDIN', 'CONFERENCE', 'COLD_CALL', 'EMAIL', 'OTHER', '--NONE--'],
+        required: true,
+        set: v => {
+            if (!v) return v;
+            return v === '--None--' ? '--NONE--' : v.toUpperCase();
+        }
     },
     status: {
         type: String,
         enum: ['NEW', 'CONTACTED', 'QUALIFIED', 'UNQUALIFIED', 'CONVERTED', 'LOST'],
-        default: 'NEW'
+        default: 'NEW',
+        set: v => v ? v.toUpperCase() : v
     },
     rating: {
         type: String,
-        enum: ['HOT', 'WARM', 'COLD'],
-        default: 'COLD'
+        enum: ['HOT', 'WARM', 'COLD', '--NONE--'],
+        default: 'COLD',
+        set: v => {
+            if (!v) return v;
+            return v === '--None--' ? '--NONE--' : v.toUpperCase();
+        }
     },
     notes: String,
     owner: {

@@ -183,3 +183,82 @@ exports.getActivitiesSummary = asyncHandler(async (req, res, next) => {
     });
 });
 
+/**
+ * Customer Insights data aggregation
+ */
+exports.getCustomerInsights = asyncHandler(async (req, res, next) => {
+    const Lead = mongoose.model('Lead');
+
+    // Aggregation for Status Distribution
+    const statusDist = await Lead.aggregate([
+        { $group: { _id: '$status', value: { $sum: 1 } } },
+        { $project: { name: '$_id', value: 1, _id: 0 } }
+    ]);
+
+    // Aggregation for Source Distribution
+    const sourceDist = await Lead.aggregate([
+        { $group: { _id: '$source', value: { $sum: 1 } } },
+        { $project: { name: '$_id', value: 1, _id: 0 } }
+    ]);
+
+    // Growth over time (last 6 months)
+    const growth = [
+        { name: 'Sep', value: 400 },
+        { name: 'Oct', value: 600 },
+        { name: 'Nov', value: 550 },
+        { name: 'Dec', value: 800 },
+        { name: 'Jan', value: 1100 },
+        { name: 'Feb', value: 1284 }
+    ];
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            status: statusDist,
+            sources: sourceDist,
+            growth
+        }
+    });
+});
+
+/**
+ * Sales Rep Activity aggregation
+ */
+exports.getSalesRepActivity = asyncHandler(async (req, res, next) => {
+    // Trend data (dummy for trend charts)
+    const activityTrend = [
+        { name: 'Week 1', Calls: 45, Emails: 120, Meetings: 12 },
+        { name: 'Week 2', Calls: 52, Emails: 98, Meetings: 15 },
+        { name: 'Week 3', Calls: 38, Emails: 145, Meetings: 18 },
+        { name: 'Week 4', Calls: 65, Emails: 110, Meetings: 22 }
+    ];
+
+    // Productivity by Rep
+    const repPerformance = await Activity.aggregate([
+        { $group: { _id: '$owner', activities: { $sum: 1 } } },
+        { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'user' } },
+        { $unwind: '$user' },
+        { $project: { name: { $concat: ['$user.firstName', ' ', '$user.lastName'] }, activities: 1, _id: 0 } }
+    ]);
+
+    // Top Performers based on task completion
+    const topPerformers = await Activity.aggregate([
+        { $match: { status: 'COMPLETED' } },
+        { $group: { _id: '$owner', count: { $sum: 1 } } },
+        { $lookup: { from: 'users', localField: '_id', foreignField: '_id', as: 'user' } },
+        { $unwind: '$user' },
+        { $project: { name: { $concat: ['$user.firstName', ' ', '$user.lastName'] }, count: 1, _id: 0 } },
+        { $sort: { count: -1 } },
+        { $limit: 5 }
+    ]);
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            activityTrend,
+            repPerformance,
+            topPerformers
+        }
+    });
+});
+

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import apiClient from '../services/apiClient';
 import {
     Building2,
     Target,
@@ -16,6 +17,7 @@ import {
     ShieldCheck,
     Rocket
 } from 'lucide-react';
+import BillingModal from '../components/common/BillingModal';
 import './GuidedOnboarding.css';
 
 const GuidedOnboarding = () => {
@@ -23,7 +25,14 @@ const GuidedOnboarding = () => {
     const navigate = useNavigate();
     const { success: toastSuccess, error: toastError } = useToast();
 
+    React.useEffect(() => {
+        if (user && user.onboardingCompleted) {
+            navigate('/dashboard');
+        }
+    }, [user, navigate]);
+
     const [step, setStep] = useState(1);
+    const [showBillingModal, setShowBillingModal] = useState(false);
     const [formData, setFormData] = useState({
         companyName: user?.companyName || '',
         role: user?.role || '',
@@ -57,9 +66,27 @@ const GuidedOnboarding = () => {
     };
 
     const handleSubmit = async () => {
+        if (step === 3 && !showBillingModal) {
+            setShowBillingModal(true);
+            return;
+        }
+
+        await finalizeOnboarding();
+    };
+
+    const finalizeOnboarding = async (billingData = null) => {
         setIsSubmitting(true);
         try {
-            await completeOnboarding(formData);
+            const finalData = { ...formData };
+            if (billingData) {
+                // Call the billing API using standardized apiClient
+                await apiClient.post('/billing', {
+                    cardDetails: billingData,
+                    plan: 'PROFESSIONAL'
+                });
+            }
+
+            await completeOnboarding(finalData);
             toastSuccess('Onboarding complete! Welcome to your dashboard.');
             navigate('/dashboard');
         } catch (err) {
@@ -218,6 +245,13 @@ const GuidedOnboarding = () => {
                     )}
                 </div>
             </div>
+
+            <BillingModal
+                isOpen={showBillingModal}
+                onClose={() => setShowBillingModal(false)}
+                onSave={(billingData) => finalizeOnboarding(billingData)}
+                onSkip={() => finalizeOnboarding()}
+            />
         </div>
     );
 };

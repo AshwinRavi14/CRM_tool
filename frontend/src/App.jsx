@@ -1,6 +1,10 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';
+import CustomerEntry from './pages/CustomerEntry';
+import CustomerInsights from './pages/CustomerInsights';
+import SalesRepActivity from './pages/SalesRepActivity';
+import ManagementHub from './pages/ManagementHub';
 import Dashboard from './pages/Dashboard';
 import Leads from './pages/Leads';
 import Opportunities from './pages/Opportunities';
@@ -13,6 +17,8 @@ import ProjectDetails from './pages/ProjectDetails';
 import AccountDetails from './pages/AccountDetails';
 import Analytics from './pages/Analytics';
 import Settings from './pages/Settings';
+import Quotes from './pages/Quotes';
+import TasksActivities from './pages/TasksActivities';
 import UserManagement from './pages/UserManagement';
 import Forecasts from './pages/Forecasts';
 import ActivitiesReport from './pages/ActivitiesReport';
@@ -61,6 +67,12 @@ function App() {
           <Route path="settings" element={<Settings />} />
           <Route path="users" element={<UserManagement />} />
           <Route path="forecasts" element={<Forecasts />} />
+          <Route path="quotes" element={<Quotes />} />
+          <Route path="tasks" element={<TasksActivities />} />
+          <Route path="customer-entry" element={<CustomerEntry />} />
+          <Route path="management" element={<ManagementHub />} />
+          <Route path="report-insights" element={<CustomerInsights />} />
+          <Route path="report-rep-activity" element={<SalesRepActivity />} />
           <Route path="onboarding" element={<OnboardingDashboard />} />
         </Route>
 

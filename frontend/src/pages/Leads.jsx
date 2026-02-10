@@ -22,6 +22,7 @@ import {
 import { useToast } from '../context/ToastContext';
 import apiClient from '../services/apiClient';
 import LeadModal from '../components/leads/LeadModal';
+import QuoteModal from '../components/quotes/QuoteModal';
 import './Leads.css';
 
 const Leads = () => {
@@ -34,6 +35,8 @@ const Leads = () => {
     const [showModal, setShowModal] = useState(false);
     const [selectedLead, setSelectedLead] = useState(null);
     const [viewMode, setViewMode] = useState('list'); // 'list' or 'grid'
+    const [showQuoteModal, setShowQuoteModal] = useState(false);
+    const [quoteLeadData, setQuoteLeadData] = useState(null);
     const [activeFilter, setActiveFilter] = useState('total');
     const toast = useToast();
 
@@ -106,6 +109,12 @@ const Leads = () => {
         } catch (err) {
             toast.error(err.response?.data?.message || 'Failed to convert lead');
         }
+    };
+
+    const handleGenerateQuote = (e, lead) => {
+        e.stopPropagation();
+        setQuoteLeadData(lead);
+        setShowQuoteModal(true);
     };
 
     const filteredLeads = leads.filter(lead => {
@@ -246,6 +255,7 @@ const Leads = () => {
                                             <button className="action-circle" title="Email" onClick={(e) => e.stopPropagation()}><Mail size={14} /></button>
                                             <button className="action-circle" title="Call" onClick={(e) => e.stopPropagation()}><Phone size={14} /></button>
                                             <button className="action-circle" title="Convert" onClick={(e) => handleConvertLead(e, lead)}><Target size={14} /></button>
+                                            <button className="action-circle" title="Quote" onClick={(e) => handleGenerateQuote(e, lead)}><FileText size={14} /></button>
                                             <button className="action-circle" onClick={(e) => e.stopPropagation()}><ChevronDown size={14} /></button>
                                         </div>
                                     </td>
@@ -262,6 +272,17 @@ const Leads = () => {
                 onSuccess={fetchLeads}
                 initialData={selectedLead}
             />
+
+            {showQuoteModal && (
+                <QuoteModal
+                    leadData={quoteLeadData}
+                    onClose={() => setShowQuoteModal(false)}
+                    onSave={() => {
+                        setShowQuoteModal(false);
+                        navigate('/dashboard/quotes');
+                    }}
+                />
+            )}
         </div>
     );
 };

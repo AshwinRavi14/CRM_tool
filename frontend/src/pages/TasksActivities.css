@@ -1,0 +1,250 @@
+.tasks-page-container {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.tasks-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px;
+}
+
+.tasks-header .header-left h2 {
+    margin: 0 0 12px;
+    font-size: 1.25rem;
+    font-weight: 700;
+}
+
+.tab-switcher {
+    display: flex;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px;
+    border-radius: 8px;
+    width: fit-content;
+}
+
+.tab-switcher button {
+    padding: 6px 16px;
+    border: none;
+    background: transparent;
+    color: var(--text-secondary);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    border-radius: 6px;
+    transition: all 0.2s;
+}
+
+.tab-switcher button.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--text-primary);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.header-right {
+    display: flex;
+    gap: 10px;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    width: 250px;
+}
+
+.search-box input {
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    width: 100%;
+}
+
+.view-toggle {
+    padding: 8px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-primary);
+    cursor: pointer;
+}
+
+.tasks-list {
+    padding: 0;
+    overflow: hidden;
+}
+
+.tasks-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.tasks-table th {
+    text-align: left;
+    padding: 14px 16px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.tasks-table td {
+    padding: 14px 16px;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.subject-cell {
+    font-weight: 600;
+    color: var(--primary);
+    cursor: pointer;
+}
+
+.subject-cell:hover {
+    text-decoration: underline;
+}
+
+.type-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--type-color);
+    background: color-mix(in srgb, var(--type-color) 12%, transparent);
+}
+
+.status-badge {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--status-color);
+}
+
+/* Kanban */
+.kanban-view {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    align-items: flex-start;
+}
+
+.kanban-column {
+    background: rgba(255, 255, 255, 0.02);
+    padding: 12px;
+    border-radius: 12px;
+    min-height: 500px;
+}
+
+.column-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    padding: 0 4px;
+}
+
+.column-header .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+}
+
+.column-header h4 {
+    margin: 0;
+    font-size: 0.9rem;
+    font-weight: 700;
+    flex: 1;
+}
+
+.column-header .count {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.08);
+    padding: 2px 8px;
+    border-radius: 10px;
+}
+
+.column-body {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.task-card {
+    padding: 14px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.task-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.card-top {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.type-tag-mini {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--type-color);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.priority-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.card-subject {
+    margin: 0 0 12px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    line-height: 1.4;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.card-date {
+    font-size: 0.72rem;
+    color: var(--text-secondary);
+}
+
+.card-owner {
+    width: 20px;
+    height: 20px;
+    background: var(--primary);
+    color: white;
+    font-size: 0.65rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}

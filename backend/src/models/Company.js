@@ -22,6 +22,24 @@ const companySchema = new mongoose.Schema({
     trialEndsAt: {
         type: Date,
         default: () => new Date(+new Date() + 14 * 24 * 60 * 60 * 1000) // 14 days from now
+    },
+    billingDetails: {
+        last4: String,
+        cardBrand: String,
+        expiryMonth: Number,
+        expiryYear: Number,
+        billingEmail: String,
+        country: String
+    },
+    subscriptionPlan: {
+        type: String,
+        enum: ['TRIAL', 'PROFESSIONAL', 'ENTERPRISE'],
+        default: 'TRIAL'
+    },
+    subscriptionStatus: {
+        type: String,
+        enum: ['ACTIVE', 'PAST_DUE', 'CANCELED', 'TRIALING'],
+        default: 'TRIALING'
     }
 }, {
     timestamps: true

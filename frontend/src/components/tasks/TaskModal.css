@@ -1,0 +1,46 @@
+.task-modal {
+    width: 100%;
+    max-width: 600px;
+    border-radius: 12px;
+}
+
+.task-modal .form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.task-modal .span-2 {
+    grid-column: span 2;
+}
+
+.task-modal .modal-body {
+    padding: 24px;
+}
+
+.task-modal .form-group label {
+    display: block;
+    margin-bottom: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+}
+
+.task-modal input,
+.task-modal select,
+.task-modal textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    outline: none;
+}
+
+.task-modal input:focus,
+.task-modal select:focus,
+.task-modal textarea:focus {
+    border-color: var(--primary);
+}

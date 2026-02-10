@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
     Users,
     Mail,
@@ -25,6 +26,14 @@ import './OnboardingDashboard.css';
 
 const OnboardingDashboard = () => {
     const { user, completeOnboarding } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (user && user.onboardingCompleted) {
+            navigate('/dashboard');
+        }
+    }, [user, navigate]);
+
     const [showBanner, setShowBanner] = useState(true);
     const [showTips, setShowTips] = useState(user?.showRoleTips ?? true);
     const [sampleData, setSampleData] = useState(user?.showSampleData ?? false);

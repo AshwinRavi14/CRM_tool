@@ -124,6 +124,8 @@ const searchRoutes = require('./routes/searchRoutes');
 const bulkRoutes = require('./routes/bulkRoutes');
 const userRoutes = require('./routes/userRoutes');
 const invitationRoutes = require('./routes/invitationRoutes');
+const billingRoutes = require('./routes/billingRoutes');
+const quoteRoutes = require('./routes/quoteRoutes');
 
 app.use('/api/v1/auth', authRoutes);
 app.use('/api/v1/users', userRoutes);
@@ -138,6 +140,8 @@ app.use('/api/v1/dashboard', dashboardRoutes);
 app.use('/api/v1/search', searchRoutes);
 app.use('/api/v1/bulk', bulkRoutes);
 app.use('/api/v1/reports', require('./routes/reportRoutes')); // Register Reports
+app.use('/api/v1/billing', billingRoutes);
+app.use('/api/v1/quotes', quoteRoutes);
 
 app.get('/api/v1/auth/register', (req, res) => {
     res.status(403).json({ success: false, message: 'Public registration is disabled. Please contact an administrator for an invitation.' });

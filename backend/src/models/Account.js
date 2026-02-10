@@ -14,12 +14,14 @@ const accountSchema = new mongoose.Schema({
     accountType: {
         type: String,
         enum: ['PROSPECT', 'CUSTOMER', 'PARTNER'],
-        required: true
+        required: true,
+        set: v => v ? v.toUpperCase() : v
     },
     industry: {
         type: String,
-        enum: ['AI_DEVELOPMENT', 'HEALTHCARE', 'RETAIL', 'FINANCE', 'LOGISTICS', 'ENERGY', 'MANUFACTURING', 'OTHER'],
-        default: 'OTHER'
+        enum: ['AI_DEVELOPMENT', 'HEALTHCARE', 'RETAIL', 'FINANCE', 'LOGISTICS', 'ENERGY', 'MANUFACTURING', 'TECHNOLOGY', 'OTHER'],
+        default: 'OTHER',
+        set: v => v ? v.toUpperCase() : v
     },
     website: String,
     phone: String,

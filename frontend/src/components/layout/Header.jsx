@@ -46,6 +46,10 @@ const Header = () => {
         { name: 'Forecasts', path: '/dashboard/forecasts' },
         { name: 'Projects', path: '/dashboard/projects' },
         { name: 'Reports', path: '/dashboard/reports' },
+        { name: 'Tasks', path: '/dashboard/tasks' },
+        { name: 'Customer Entry', path: '/dashboard/customer-entry' },
+        { name: 'Management', path: '/dashboard/management' },
+        { name: 'Quotes', path: '/dashboard/quotes' },
         { name: 'Dashboards', path: '/dashboard/analytics' },
         ...(user?.role === 'ADMIN' ? [{ name: 'Users', path: '/dashboard/users' }] : []),
     ];

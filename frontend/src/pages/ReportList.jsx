@@ -95,10 +95,14 @@ const ReportList = () => {
                                                 className="report-link"
                                                 onClick={() => {
                                                     if (report.category === 'Activity') {
-                                                        window.location.href = '/reports/activity/salesperson';
+                                                        window.location.href = '/dashboard/reports/activity/salesperson';
+                                                    } else if (report.name === 'Customer Insights') {
+                                                        window.location.href = '/dashboard/report-insights';
+                                                    } else if (report.category === 'Performance' || report.name === 'SalesRep Performance') {
+                                                        window.location.href = '/dashboard/report-rep-activity';
                                                     }
                                                 }}
-                                                style={{ cursor: report.category === 'Activity' ? 'pointer' : 'default', color: report.category === 'Activity' ? '#0176d3' : 'inherit' }}
+                                                style={{ cursor: (report.category === 'Activity' || report.name === 'Customer Insights' || report.category === 'Performance') ? 'pointer' : 'default', color: (report.category === 'Activity' || report.name === 'Customer Insights' || report.category === 'Performance') ? '#0176d3' : 'inherit' }}
                                             >
                                                 {report.name}
                                             </span>

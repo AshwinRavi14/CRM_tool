@@ -1,0 +1,121 @@
+.rep-activity-container {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.rep-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 24px;
+}
+
+.rep-header .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.report-icon-rep {
+    background: linear-gradient(135deg, #10b981, #3b82f6);
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 16px rgba(16, 185, 129, 0.3);
+}
+
+.rep-header h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+
+.rep-header p {
+    margin: 4px 0 0;
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+}
+
+.activity-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 20px;
+}
+
+.chart-card.span-2 {
+    grid-column: span 2;
+}
+
+.performers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 10px;
+}
+
+.performer-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 12px;
+}
+
+.rep-avatar {
+    width: 32px;
+    height: 32px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.8rem;
+}
+
+.rep-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.rep-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.rep-title {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+}
+
+.rep-stats {
+    text-align: right;
+}
+
+.rep-stats .stat-num {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+}
+
+.rep-stats .stat-label {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--text-secondary);
+}
+
+.pill {
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}

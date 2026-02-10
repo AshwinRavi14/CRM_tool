@@ -72,7 +72,7 @@ const userSchema = new mongoose.Schema({
     primaryGoals: [String],
     onboardingChecklist: {
         type: Map,
-        of: Boolean,
+        of: String,
         default: {}
     },
     showSampleData: {
