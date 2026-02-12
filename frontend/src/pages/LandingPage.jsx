@@ -1,184 +1,174 @@
-import React, { useState } from 'react';
-import { Link, Navigate, useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
-import { Users, BarChart3, Calendar, MessageSquare, Zap, Shield, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import {
+    Shield,
+    Zap,
+    BarChart3,
+    Users,
+    MessageSquare,
+    Globe,
+    ArrowRight,
+    Check,
+    Star,
+    ChevronRight,
+    LayoutDashboard,
+    PieChart,
+    Calendar,
+    Settings,
+    Menu,
+    X
+} from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
+import logo from '../assets/logo.svg';
 
 const LandingPage = () => {
-    const { user, loading } = useAuth();
     const navigate = useNavigate();
-    const [selectedPlan, setSelectedPlan] = useState('Professional');
+    const [scrolled, setScrolled] = useState(false);
+    const [selectedPlan, setSelectedPlan] = useState('Pro');
 
-    // Redirect logged-in users based on their onboarding status
-    if (user && !loading) {
-        if (user.onboardingCompleted) {
-            return <Navigate to="/dashboard" replace />;
-        } else {
-            return <Navigate to="/onboarding" replace />;
-        }
-    }
+    useEffect(() => {
+        const handleScroll = () => {
+            setScrolled(window.scrollY > 50);
+        };
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const features = [
         {
-            icon: Users,
-            title: 'Contact Management',
-            description: 'Keep all customer information organized in one place. Track interactions, notes, and communication history.'
+            icon: <Users className="w-6 h-6" />,
+            title: "Lead Management",
+            description: "Track and nurture leads through a customizable pipeline and convert them with ease."
         },
         {
-            icon: BarChart3,
-            title: 'Sales Analytics',
-            description: 'Get real-time insights into your sales pipeline. Track performance metrics and identify opportunities.'
+            icon: <BarChart3 className="w-6 h-6" />,
+            title: "Advanced Analytics",
+            description: "Deep insights into your sales performance with real-time reporting and forecasting."
         },
         {
-            icon: Calendar,
-            title: 'Task Automation',
-            description: 'Automate repetitive tasks and workflows. Set reminders and never miss a follow-up.'
+            icon: <MessageSquare className="w-6 h-6" />,
+            title: "Team Collaboration",
+            description: "Seamlessly collaborate with your team, share notes, and assign tasks in one place."
         },
         {
-            icon: MessageSquare,
-            title: 'Team Collaboration',
-            description: 'Work together seamlessly with shared notes, mentions, and activity feeds for better teamwork.'
+            icon: <Zap className="w-6 h-6" />,
+            title: "Automated Workflows",
+            description: "Save time by automating repetitive tasks like follow-up emails and reminders."
         },
         {
-            icon: Zap,
-            title: 'Integrations',
-            description: 'Connect with your favorite tools. Sync data from email, calendar, and hundreds of other apps.'
+            icon: <Shield className="w-6 h-6" />,
+            title: "Enterprise Security",
+            description: "Bank-grade security ensures your customer data is always protected and compliant."
         },
         {
-            icon: Shield,
-            title: 'Enterprise Security',
-            description: 'Bank-level encryption and security. Your data is protected with industry-leading safeguards.'
+            icon: <Globe className="w-6 h-6" />,
+            title: "Global Integration",
+            description: "Connect with over 1,000+ apps including Slack, Google Workspace, and Zoom."
         }
     ];
 
-    const pricingPlans = [
+    const pricing = [
         {
-            name: 'Starter',
-            price: '29',
-            description: 'Perfect for small teams',
-            features: ['Up to 5 users', '1,000 contacts', 'Basic analytics', 'Email support', 'Mobile app'],
-            popular: false
+            name: "Basic",
+            price: "$29",
+            description: "Perfect for small teams",
+            features: ["Up to 5 Users", "Basic CRM Tools", "Email Support", "Core Integrations"]
         },
         {
-            name: 'Professional',
-            price: '79',
-            description: 'For growing businesses',
-            features: ['Up to 20 users', '10,000 contacts', 'Advanced analytics', 'Priority support', 'Custom integrations', 'API access'],
-            popular: true
+            name: "Pro",
+            price: "$79",
+            description: "Our most popular choice",
+            features: ["Up to 25 Users", "Advanced Analytics", "Priority Support", "Automated Flows", "Custom Reports"]
         },
         {
-            name: 'Enterprise',
-            price: '199',
-            description: 'For large organizations',
-            features: ['Unlimited users', 'Unlimited contacts', 'Custom analytics', 'Dedicated support', 'Advanced security', 'Custom training'],
-            popular: false
-        }
-    ];
-
-    const testimonials = [
-        {
-            quote: "Wersel CRM transformed how we manage our sales pipeline. We've seen a 40% increase in closed deals since switching.",
-            author: "Sarah Johnson",
-            role: "VP of Sales, TechCorp",
-            avatar: "SJ"
-        },
-        {
-            quote: "The automation features save us hours every week. It's like having an extra team member dedicated to follow-ups.",
-            author: "Michael Chen",
-            role: "Sales Director, GrowthLabs",
-            avatar: "MC"
-        },
-        {
-            quote: "Best CRM we've used. The interface is intuitive, and the customer support team is incredibly responsive.",
-            author: "Emily Rodriguez",
-            role: "CEO, Startup Inc",
-            avatar: "ER"
+            name: "Enterprise",
+            price: "Custom",
+            description: "For large organizations",
+            features: ["Unlimited Users", "Full White-labeling", "Dedicated Manager", "SLA Guarantee", "Custom API Access"]
         }
     ];
 
     return (
         <div className="landing-page">
-            {/* Navigation */}
-            <nav className="landing-nav">
+            {/* Header / Nav */}
+            <nav className={`landing-nav ${scrolled ? 'nav-scrolled' : ''}`}>
                 <div className="nav-container">
                     <div className="nav-content">
                         <div className="nav-logo">
-                            <div className="logo-icon">
-                                <Users size={20} />
-                            </div>
+                            <img src={logo} alt="Wersel Logo" style={{ width: '32px', height: '32px' }} />
                             <span className="logo-text">Wersel CRM</span>
                         </div>
                         <div className="nav-links">
                             <a href="#features" className="nav-link">Features</a>
                             <a href="#pricing" className="nav-link">Pricing</a>
-                            <a href="#testimonials" className="nav-link">Testimonials</a>
-                            <div className="nav-actions">
-                                <Link to="/login" className="nav-link">Sign In</Link>
-                                <Link to="/signup" className="btn-primary">Get Started</Link>
-                            </div>
+                            <a href="#testimonials" className="nav-link">Customers</a>
+                        </div>
+                        <div className="nav-actions">
+                            <button className="nav-link" onClick={() => navigate('/login')}>Login</button>
+                            <button className="btn-primary" onClick={() => navigate('/signup')}>Get Started</button>
                         </div>
                     </div>
                 </div>
             </nav>
 
             {/* Hero Section */}
-            <section className="hero-section">
+            <header className="hero-section">
                 <div className="hero-container">
                     <div className="hero-grid">
                         <div className="hero-content">
                             <div className="hero-badge">
-                                <Zap size={16} />
-                                <span>Trusted by 10,000+ teams</span>
+                                <Zap className="w-4 h-4" />
+                                <span>Version 2.0 is now live</span>
                             </div>
                             <h1 className="hero-title">
-                                Manage customer relationships that drive growth
+                                Accelerate your sales with
+                                <span className="text-blue"> Intelligence.</span>
                             </h1>
                             <p className="hero-subtitle">
-                                Streamline your sales process, nurture customer relationships, and close more deals with our powerful CRM platform.
+                                The AI-powered CRM that helps teams sell smarter, faster, and more efficiently. Built for modern growth teams.
                             </p>
                             <div className="hero-ctas">
-                                <Link to="/signup" className="btn-primary btn-large">Start Free Trial</Link>
-                                <button className="btn-secondary btn-large">Watch Demo</button>
+                                <button className="btn-primary btn-large" onClick={() => navigate('/signup')}>
+                                    Start Free Trial
+                                    <ArrowRight className="ml-2 w-5 h-5" />
+                                </button>
+                                <button className="btn-secondary btn-large">View Demo</button>
                             </div>
-                            <p className="hero-note">No credit card required • 14-day free trial</p>
+                            <p className="hero-note">No credit card required. 14-day free trial.</p>
                         </div>
                         <div className="hero-visual">
                             <div className="hero-image-wrapper">
                                 <img
-                                    src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=800&q=80"
+                                    src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1200&q=80"
                                     alt="CRM Dashboard"
                                     className="hero-image"
                                 />
                             </div>
                             <div className="hero-stats-card">
                                 <div className="stats-icon">
-                                    <BarChart3 size={24} />
+                                    <PieChart className="w-6 h-6" />
                                 </div>
-                                <div className="stats-content">
-                                    <p className="stats-value">+127%</p>
-                                    <p className="stats-label">Sales Growth</p>
+                                <div className="stats-info">
+                                    <p className="stats-value">32%</p>
+                                    <p className="stats-label">Revenue Growth</p>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </header>
 
             {/* Features Section */}
             <section id="features" className="features-section">
                 <div className="section-container">
                     <div className="section-header">
-                        <h2 className="section-title">Everything you need to succeed</h2>
-                        <p className="section-subtitle">
-                            Powerful features designed to help your team close more deals and build lasting customer relationships.
-                        </p>
+                        <h2 className="section-title">Everything you need to grow</h2>
+                        <p className="section-subtitle">Powerful features to help you manage leads, close deals, and build lasting customer relationships.</p>
                     </div>
                     <div className="features-grid">
-                        {features.map((feature, index) => (
-                            <div key={index} className="feature-card">
-                                <div className="feature-icon">
-                                    <feature.icon size={24} />
-                                </div>
+                        {features.map((feature, idx) => (
+                            <div key={idx} className="feature-card">
+                                <div className="feature-icon">{feature.icon}</div>
                                 <h3 className="feature-title">{feature.title}</h3>
                                 <p className="feature-description">{feature.description}</p>
                             </div>
@@ -192,42 +182,35 @@ const LandingPage = () => {
                 <div className="section-container">
                     <div className="section-header">
                         <h2 className="section-title">Simple, transparent pricing</h2>
-                        <p className="section-subtitle">Choose the plan that's right for your team</p>
+                        <p className="section-subtitle">Choose the plan that's right for your business. No hidden fees.</p>
                     </div>
                     <div className="pricing-grid">
-                        {pricingPlans.map((plan, index) => (
+                        {pricing.map((plan, idx) => (
                             <div
-                                key={index}
-                                className={`pricing-card ${plan.popular ? 'popular' : ''} ${selectedPlan === plan.name ? 'selected' : ''}`}
+                                key={idx}
+                                className={`pricing-card ${selectedPlan === plan.name ? 'selected' : ''}`}
                                 onClick={() => setSelectedPlan(plan.name)}
                             >
-                                {plan.popular && <div className="popular-badge">Most Popular</div>}
                                 {selectedPlan === plan.name && (
                                     <div className="selected-check">
-                                        <Check size={16} />
+                                        <Check className="w-5 h-5" />
                                     </div>
                                 )}
+                                {plan.name === 'Pro' && <span className="popular-badge">Most Popular</span>}
                                 <h3 className="plan-name">{plan.name}</h3>
                                 <p className="plan-description">{plan.description}</p>
                                 <div className="plan-price">
-                                    <span className="price-amount">${plan.price}</span>
+                                    <span className="price-amount">{plan.price}</span>
                                     <span className="price-period">/month</span>
                                 </div>
-                                <button
-                                    className={`plan-cta ${plan.popular || selectedPlan === plan.name ? 'btn-primary' : 'btn-secondary'}`}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        sessionStorage.setItem('selected_crm_plan', plan.name);
-                                        navigate('/signup');
-                                    }}
-                                >
+                                <button className={`plan-cta ${plan.name === 'Pro' ? 'btn-primary' : 'btn-secondary'}`}>
                                     Get Started
                                 </button>
                                 <ul className="plan-features">
-                                    {plan.features.map((feature, featureIndex) => (
-                                        <li key={featureIndex} className="plan-feature">
-                                            <Check size={18} className="check-icon" />
-                                            <span>{feature}</span>
+                                    {plan.features.map((feature, fIdx) => (
+                                        <li key={fIdx} className="plan-feature">
+                                            <Check className="w-4 h-4 check-icon" />
+                                            {feature}
                                         </li>
                                     ))}
                                 </ul>
@@ -237,29 +220,27 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* Testimonials Section */}
+            {/* Testimonials */}
             <section id="testimonials" className="testimonials-section">
                 <div className="section-container">
                     <div className="section-header">
-                        <h2 className="section-title">Loved by teams worldwide</h2>
-                        <p className="section-subtitle">See what our customers have to say</p>
+                        <h2 className="section-title">Trusted by thousands</h2>
+                        <p className="section-subtitle">Join over 10,000+ teams who use Wersel CRM to grow their business.</p>
                     </div>
                     <div className="testimonials-grid">
-                        {testimonials.map((testimonial, index) => (
-                            <div key={index} className="testimonial-card">
+                        {[1, 2, 3].map((_, idx) => (
+                            <div key={idx} className="testimonial-card">
                                 <div className="testimonial-stars">
-                                    {[...Array(5)].map((_, i) => (
-                                        <svg key={i} className="star-icon" fill="currentColor" viewBox="0 0 20 20">
-                                            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
-                                        </svg>
-                                    ))}
+                                    {[1, 2, 3, 4, 5].map(s => <Star key={s} className="star-icon" fill="currentColor" />)}
                                 </div>
-                                <p className="testimonial-quote">{testimonial.quote}</p>
+                                <p className="testimonial-quote">
+                                    "Wersel has completely transformed how our sales team operates. We've seen a 40% increase in productivity within the first three months."
+                                </p>
                                 <div className="testimonial-author">
-                                    <div className="author-avatar">{testimonial.avatar}</div>
+                                    <div className="author-avatar">JD</div>
                                     <div className="author-info">
-                                        <p className="author-name">{testimonial.author}</p>
-                                        <p className="author-role">{testimonial.role}</p>
+                                        <p className="author-name">John Doe</p>
+                                        <p className="author-role">Director of Sales, TechCo</p>
                                     </div>
                                 </div>
                             </div>
@@ -270,12 +251,14 @@ const LandingPage = () => {
 
             {/* CTA Section */}
             <section className="cta-section">
-                <div className="section-container">
-                    <h2 className="cta-title">Ready to grow your business?</h2>
-                    <p className="cta-subtitle">Join 10,000+ teams using Wersel CRM to close more deals.</p>
+                <div className="cta-container">
+                    <h2 className="cta-title">Ready to supercharge your sales?</h2>
+                    <p className="cta-subtitle">Start your 14-day free trial today. No credit card required.</p>
                     <div className="cta-actions">
-                        <Link to="/signup" className="btn-primary btn-large">Start Free Trial</Link>
-                        <button className="btn-secondary btn-large">Contact Sales</button>
+                        <button className="btn-primary btn-large" onClick={() => navigate('/signup')}>
+                            Get Started Now
+                        </button>
+                        <button className="btn-secondary btn-large">Talk to Sales</button>
                     </div>
                 </div>
             </section>
@@ -284,19 +267,20 @@ const LandingPage = () => {
             <footer className="landing-footer">
                 <div className="footer-container">
                     <div className="footer-grid">
-                        <div className="footer-brand">
-                            <div className="nav-logo">
-                                <div className="logo-icon">
-                                    <Users size={20} />
-                                </div>
-                                <span className="logo-text">Wersel CRM</span>
+                        {/* Brand Section */}
+                        <div className="footer-column brand-column">
+                            <div className="footer-logo">
+                                <img src={logo} alt="Wersel Logo" />
+                                <span className="footer-brand-name">Wersel CRM</span>
                             </div>
-                            <p className="footer-tagline">
+                            <p className="footer-description">
                                 The modern CRM platform for teams that want to grow faster.
                             </p>
                         </div>
-                        <div className="footer-links-group">
-                            <h4 className="footer-heading">Product</h4>
+
+                        {/* Product */}
+                        <div className="footer-column">
+                            <h3 className="footer-heading">PRODUCT</h3>
                             <ul className="footer-links">
                                 <li><a href="#features">Features</a></li>
                                 <li><a href="#pricing">Pricing</a></li>
@@ -304,8 +288,10 @@ const LandingPage = () => {
                                 <li><a href="#">API</a></li>
                             </ul>
                         </div>
-                        <div className="footer-links-group">
-                            <h4 className="footer-heading">Company</h4>
+
+                        {/* Company */}
+                        <div className="footer-column">
+                            <h3 className="footer-heading">COMPANY</h3>
                             <ul className="footer-links">
                                 <li><a href="#">About</a></li>
                                 <li><a href="#">Blog</a></li>
@@ -313,8 +299,10 @@ const LandingPage = () => {
                                 <li><a href="#">Contact</a></li>
                             </ul>
                         </div>
-                        <div className="footer-links-group">
-                            <h4 className="footer-heading">Resources</h4>
+
+                        {/* Resources */}
+                        <div className="footer-column">
+                            <h3 className="footer-heading">RESOURCES</h3>
                             <ul className="footer-links">
                                 <li><a href="#">Documentation</a></li>
                                 <li><a href="#">Help Center</a></li>
@@ -323,8 +311,11 @@ const LandingPage = () => {
                             </ul>
                         </div>
                     </div>
+
+                    <div className="footer-bottom-divider"></div>
+
                     <div className="footer-bottom">
-                        <p className="footer-copyright">© 2026 Wersel CRM. All rights reserved.</p>
+                        <p className="footer-copyright">© 2026 Wersel CRM</p>
                         <div className="footer-legal">
                             <a href="#">Privacy Policy</a>
                             <a href="#">Terms of Service</a>
@@ -338,3 +329,4 @@ const LandingPage = () => {
 };
 
 export default LandingPage;
+

@@ -14,6 +14,7 @@ import {
     Rocket
 } from 'lucide-react';
 import { GoogleLogo, MicrosoftTeamsLogo } from '../components/common/BrandLogos';
+import logo from '../assets/logo.svg';
 import './Signup.css';
 
 const Signup = () => {
@@ -94,7 +95,7 @@ const Signup = () => {
             <div className="signup-container">
                 <div className="signup-header">
                     <div className="logo-box">
-                        <Square size={32} fill="#0176d3" color="#0176d3" />
+                        <img src={logo} alt="Wersel Logo" className="auth-logo-img" style={{ width: '32px', height: '32px' }} />
                     </div>
                     <h1>Start your 14-day free trial</h1>
                     <p className="subtitle">No credit card required. Experience CRM Suite's full power.</p>

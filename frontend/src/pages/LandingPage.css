@@ -1,9 +1,4 @@
-/* ===================================
-   CRM Landing Page Styles
-   Premium, Modern Design
-   =================================== */
 
-/* --- CSS Variables --- */
 :root {
     --landing-blue: #2563EB;
     --landing-blue-dark: #1D4ED8;
@@ -20,14 +15,17 @@
     --landing-yellow-400: #FACC15;
 }
 
-/* --- Landing Page Container --- */
 .landing-page {
     min-height: 100vh;
     background: #FFFFFF;
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    max-width: 100%;
+    padding: 0;
+    text-align: left;
+    margin: 0;
 }
 
-/* --- Navigation --- */
+
 .landing-nav {
     position: fixed;
     top: 0;
@@ -253,7 +251,7 @@
     margin: 0;
 }
 
-/* --- Section Common Styles --- */
+
 .section-container {
     max-width: 1280px;
     margin: 0 auto;
@@ -279,7 +277,7 @@
     margin: 0 auto;
 }
 
-/* --- Features Section --- */
+
 .features-section {
     padding: 100px 24px;
     background: var(--landing-gray-50);
@@ -329,7 +327,7 @@
     line-height: 1.6;
 }
 
-/* --- Pricing Section --- */
+    
 .pricing-section {
     padding: 100px 24px;
 }
@@ -416,6 +414,7 @@
     font-size: 48px;
     font-weight: 700;
     color: var(--landing-gray-900);
+    margin: 0;
 }
 
 .price-period {
@@ -551,64 +550,109 @@
 
 /* --- Footer --- */
 .landing-footer {
-    background: var(--landing-gray-900);
-    color: var(--landing-gray-300);
-    padding: 64px 24px 32px;
+    background: linear-gradient(180deg, #0B1120 0%, #0A0F1C 100%);
+    color: #94A3B8;
+    padding: 100px 0 60px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    width: 100vw;
+    position: relative;
+    left: 50%;
+    right: 50%;
+    margin-left: -50vw;
+    margin-right: -50vw;
+    box-sizing: border-box;
 }
 
 .footer-container {
-    max-width: 1280px;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 0 24px;
 }
 
 .footer-grid {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr 1fr;
-    gap: 48px;
-    margin-bottom: 48px;
+    gap: 80px;
+    margin-bottom: 80px;
 }
 
-.footer-brand .nav-logo .logo-text {
-    color: white;
+.footer-column {
+    display: flex;
+    flex-direction: column;
 }
 
-.footer-tagline {
-    font-size: 14px;
-    margin-top: 16px;
+.brand-column {
+    max-width: 320px;
+}
+
+.footer-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.footer-logo img {
+    width: 32px;
+    height: 32px;
+}
+
+.footer-brand-name {
+    font-size: 22px;
+    font-weight: 700;
+    color: #FFFFFF;
+    letter-spacing: -0.02em;
+}
+
+.footer-description {
+    font-size: 15px;
+    color: #94A3B8;
     line-height: 1.6;
+    margin: 0;
 }
 
 .footer-heading {
-    font-size: 14px;
+    font-size: 12px;
     font-weight: 600;
-    color: white;
-    margin-bottom: 16px;
+    color: #FFFFFF;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin: 0 0 24px 0;
 }
 
 .footer-links {
     list-style: none;
     padding: 0;
     margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
 }
 
 .footer-links li {
-    margin-bottom: 12px;
+    margin: 0;
 }
 
 .footer-links a {
-    font-size: 14px;
-    color: var(--landing-gray-300);
+    font-size: 15px;
+    color: #94A3B8;
     text-decoration: none;
-    transition: color 0.2s;
+    font-weight: 500;
+    transition: all 0.2s ease;
 }
 
 .footer-links a:hover {
-    color: white;
+    color: #FFFFFF;
+    transform: translateX(2px);
+}
+
+.footer-bottom-divider {
+    height: 1px;
+    background: rgba(255, 255, 255, 0.1);
+    margin-bottom: 40px;
 }
 
 .footer-bottom {
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
-    padding-top: 32px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -616,23 +660,24 @@
 
 .footer-copyright {
     font-size: 14px;
+    color: #64748B;
     margin: 0;
 }
 
 .footer-legal {
     display: flex;
-    gap: 24px;
+    gap: 32px;
 }
 
 .footer-legal a {
     font-size: 14px;
-    color: var(--landing-gray-300);
+    color: #64748B;
     text-decoration: none;
-    transition: color 0.2s;
+    transition: color 0.2s ease;
 }
 
 .footer-legal a:hover {
-    color: white;
+    color: #FFFFFF;
 }
 
 /* --- Responsive Design --- */
@@ -653,8 +698,7 @@
     }
 
     .footer-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 32px;
+        gap: 48px;
     }
 }
 
@@ -701,17 +745,28 @@
     }
 
     .footer-grid {
-        grid-template-columns: 1fr;
-        gap: 32px;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px 48px;
+    }
+
+    .brand-column {
+        grid-column: span 2;
+        max-width: 100%;
     }
 
     .footer-bottom {
         flex-direction: column;
-        gap: 16px;
+        gap: 24px;
         text-align: center;
     }
+}
 
-    .cta-buttons {
-        flex-direction: column;
+@media (max-width: 480px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .brand-column {
+        grid-column: span 1;
     }
 }

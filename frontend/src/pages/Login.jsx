@@ -14,6 +14,7 @@ import {
 import { GoogleLogo, MicrosoftTeamsLogo } from '../components/common/BrandLogos';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import logo from '../assets/logo.svg';
 import './AuthLayout.css';
 
 const Login = () => {
@@ -62,7 +63,7 @@ const Login = () => {
         <div className="signup-page-split">
             {/* Header Logo */}
             <div className="signup-logo-container">
-                <Square size={28} fill="#0176d3" color="#0176d3" />
+                <img src={logo} alt="Wersel Logo" className="auth-logo-img" style={{ width: '32px', height: '32px', marginRight: '10px' }} />
                 <span className="brand-text">WERSEL-CRM</span>
             </div>
 

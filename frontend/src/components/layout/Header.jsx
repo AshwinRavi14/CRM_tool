@@ -26,6 +26,7 @@ import {
 import { useNavigate, NavLink, useLocation } from 'react-router-dom';
 import apiClient from '../../services/apiClient';
 import { useAuth } from '../../context/AuthContext';
+import logo from '../../assets/logo.svg';
 import './Header.css';
 
 const Header = () => {
@@ -107,7 +108,7 @@ const Header = () => {
             <div className="header-top-row">
                 <div className="header-left-sf">
                     <div className="logo-sf" onClick={() => navigate('/dashboard')}>
-                        <Cloud size={32} color="#0176d3" fill="#0176d3" />
+                        <img src={logo} alt="Wersel Logo" className="header-logo-img" style={{ width: '32px', height: '32px' }} />
                     </div>
                     <div className="app-launcher">
                         <LayoutGrid size={20} />
